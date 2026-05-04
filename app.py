@@ -5,9 +5,9 @@ import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-change-me')
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", ping_timeout=10, ping_interval=5)
 
-# All connected players: { sid: { x, y, angle, color } }
+# Connected players: { sid: { x, y, angle, color } }
 players = {}
 
 COLORS = ['#4488cc', '#cc4444', '#44cc44', '#cc8844', '#8844cc', '#44cccc']
