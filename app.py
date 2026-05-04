@@ -12,6 +12,8 @@ items = {}
 item_counter = 0
 
 COLORS = ['#4488cc', '#cc4444', '#44cc44', '#cc8844', '#8844cc', '#44cccc']
+START_HP = 100
+BULLET_DAMAGE = 25
 
 
 def spawn_item():
@@ -25,7 +27,6 @@ def spawn_item():
     return item_id
 
 
-# Start with 3 items on the map
 for _ in range(3):
     spawn_item()
 
@@ -44,6 +45,8 @@ def on_connect():
         'angle': 0,
         'color': color,
         'scale': 1,
+        'hp': START_HP,
+        'alive': True,
     }
     emit('init', {'id': sid(), 'players': players, 'items': items})
     emit('player_joined', {'id': sid(), 'data': players[sid()]}, broadcast=True, include_self=False)
@@ -59,7 +62,7 @@ def on_disconnect():
 
 @socketio.on('move')
 def on_move(data):
-    if sid() in players:
+    if sid() in players and players[sid()]['alive']:
         players[sid()]['x'] = data['x']
         players[sid()]['y'] = data['y']
         players[sid()]['angle'] = data['angle']
@@ -68,28 +71,57 @@ def on_move(data):
 
 @socketio.on('shoot')
 def on_shoot(data):
-    emit('player_shot', {'id': sid(), 'data': data}, broadcast=True, include_self=False)
+    if sid() in players and players[sid()]['alive']:
+        emit('player_shot', {'id': sid(), 'data': data}, broadcast=True, include_self=False)
+
+
+@socketio.on('hit')
+def on_hit(data):
+    """A player reports their bullet hit another player."""
+    target_id = data.get('target_id')
+    if target_id not in players:
+        return
+    if not players[target_id]['alive']:
+        return
+
+    players[target_id]['hp'] -= BULLET_DAMAGE
+
+    if players[target_id]['hp'] <= 0:
+        players[target_id]['hp'] = 0
+        players[target_id]['alive'] = False
+        # Tell everyone this player died and who killed them
+        socketio.emit('player_died', {'id': target_id, 'killer_id': sid()})
+
+        # Respawn after 3 seconds
+        def respawn():
+            socketio.sleep(3)
+            if target_id in players:
+                players[target_id]['hp'] = START_HP
+                players[target_id]['alive'] = True
+                players[target_id]['x'] = random.randint(100, 700)
+                players[target_id]['y'] = random.randint(100, 500)
+                players[target_id]['scale'] = 1
+                socketio.emit('player_respawned', {'id': target_id, 'data': players[target_id]})
+        socketio.start_background_task(respawn)
+    else:
+        # Just damage, tell everyone the new hp
+        socketio.emit('player_damaged', {'id': target_id, 'hp': players[target_id]['hp']})
 
 
 @socketio.on('pickup')
 def on_pickup(data):
     item_id = data.get('item_id')
     if item_id in items:
-        # Remove the item
         del items[item_id]
-
-        # Grow the player
         if sid() in players:
             players[sid()]['scale'] = 3
-
-        # Tell everyone: item gone + player grew
         socketio.emit('item_picked', {'item_id': item_id, 'player_id': sid(), 'scale': 3})
 
-        # Spawn a new item after 5 seconds
         def respawn():
+            socketio.sleep(5)
             new_id = spawn_item()
             socketio.emit('item_spawned', {'item_id': new_id, 'data': items[new_id]})
-        socketio.start_background_task(lambda: (socketio.sleep(5), respawn()))
+        socketio.start_background_task(respawn)
 
 
 def sid():
