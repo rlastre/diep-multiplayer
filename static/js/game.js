@@ -26,6 +26,7 @@ class PlayScene extends Phaser.Scene {
 
   create() {
     this.cameras.main.setBackgroundColor('#e8e4d8');
+    this.cameras.main.setRoundPixels(false); 
     
     this.physics.world.setBounds(0, 0, 2000, 2000);
     this.cameras.main.setBounds(0, 0, 2000, 2000);
@@ -236,7 +237,7 @@ class PlayScene extends Phaser.Scene {
       fontFamily: 'Courier New', fontSize: '11px', color: '#333',
     }).setOrigin(0.5).setDepth(51);
 
-    this.cameras.main.startFollow(this.tank, true, .08, .08); 
+    this.cameras.main.startFollow(this.tank, true, 1, .1); 
   }
 
   addRemotePlayer(pid, data) {
@@ -372,7 +373,7 @@ class PlayScene extends Phaser.Scene {
       if (this.keys.d.isDown) ax = spd;
       if (this.keys.w.isDown) ay = -spd;
       if (this.keys.s.isDown) ay = spd;
-      this.tank.setAcceleration(ax, ay);
+      this.tank.setVelocity(ax ? ax / 2 : 0, ay ? ay / 2 : 0); 
 
       const ptr = this.input.activePointer;
       const angle = Phaser.Math.Angle.Between(this.tank.x, this.tank.y, ptr.worldX, ptr.worldY);
