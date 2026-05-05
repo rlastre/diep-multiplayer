@@ -111,7 +111,7 @@ class PlayScene extends Phaser.Scene {
     this.socket.on('player_shot', (data) => {
       this.spawnBullet(data.data.x, data.data.y, data.data.angle, data.id);
     });
-6
+
     this.socket.on('player_damaged', (data) => {
       if (data.id === this.myId) {
         this.myHp = data.hp;
