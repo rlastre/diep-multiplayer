@@ -29,8 +29,8 @@ def spawn_item():
     item_counter += 1
     item_id = f'item_{item_counter}'
     items[item_id] = {
-        'x': random.randint(60, 740),
-        'y': random.randint(60, 540),
+        'x': random.randint(60, 1900),
+        'y': random.randint(60, 1900),
     }
     return item_id
 
@@ -107,8 +107,8 @@ def game():
 def on_connect():
     username = request.args.get('username', session.get('username', 'Guest'))
     players[request.sid] = {
-        'x': random.randint(100, 700),
-        'y': random.randint(100, 500),
+        'x': random.randint(100, 1900),
+        'y': random.randint(100, 1900),
         'angle': 0,
         'color': random.choice(COLORS),
         'scale': 1,
@@ -176,8 +176,8 @@ def on_hit(data):
                 if tid in players:
                     players[tid]['hp'] = START_HP
                     players[tid]['alive'] = True
-                    players[tid]['x'] = random.randint(100, 700)
-                    players[tid]['y'] = random.randint(100, 500)
+                    players[tid]['x'] = random.randint(100, 1900)
+                    players[tid]['y'] = random.randint(100, 1900)
                     players[tid]['scale'] = 1
                     socketio.emit('player_respawned', {'id': tid, 'data': players[tid]})
             return do_respawn
