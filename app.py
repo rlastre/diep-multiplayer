@@ -105,7 +105,7 @@ def game():
 # =============================================
 @socketio.on('connect')
 def on_connect():
-    username = session.get('username', 'Guest')
+    username = request.args.get('username', session.get('username', 'Guest'))
     players[request.sid] = {
         'x': random.randint(100, 700),
         'y': random.randint(100, 500),
