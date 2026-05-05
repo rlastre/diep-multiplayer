@@ -311,3 +311,103 @@ class PlayScene extends Phaser.Scene {
         }
       }
       if (shooter && shooter !== this.myId && this.alive && this.tank) {
+        const dist = Phaser.Math.Distance.Between(bullet.x, bullet.y, this.tank.x, this.tank.y);
+        if (dist < 22) bullet.destroy();
+      }
+    });
+  }
+
+  interpolateRemotePlayers() {
+    const lerp = 0.2;
+    for (const r of Object.values(this.otherPlayers)) {
+      if (!r.alive) continue;
+      r.tank.x += (r.targetX - r.tank.x) * lerp;
+      r.tank.y += (r.targetY - r.tank.y) * lerp;
+      r.barrel.x = r.tank.x;
+      r.barrel.y = r.tank.y;
+      r.barrel.rotation += (r.targetAngle - r.barrel.rotation) * lerp;
+      if (r.nameTag) { r.nameTag.x = r.tank.x; r.nameTag.y = r.tank.y - 36; }
+    }
+  }
+
+  drawHealthBars() {
+    this.hpGraphics.clear();
+    const drawBar = (x, y, hp) => {
+      const w = 40, h = 5, bx = x - w / 2, by = y - 26;
+      this.hpGraphics.fillStyle(0x333333, 0.5);
+      this.hpGraphics.fillRect(bx, by, w, h);
+      const pct = Math.max(0, hp / 100);
+      const color = pct > 0.5 ? 0x44cc44 : pct > 0.25 ? 0xcccc44 : 0xcc4444;
+      this.hpGraphics.fillStyle(color, 0.9);
+      this.hpGraphics.fillRect(bx, by, w * pct, h);
+    };
+    if (this.tank && this.alive) {
+      drawBar(this.tank.x, this.tank.y, this.myHp);
+      if (this.myNameTag) { this.myNameTag.x = this.tank.x; this.myNameTag.y = this.tank.y - 36; }
+    }
+    for (const r of Object.values(this.otherPlayers)) {
+      if (!r.alive) continue;
+      drawBar(r.tank.x, r.tank.y, r.hp || 100);
+    }
+  }
+
+  update(time) {
+    if (!this.tank) return;
+
+    this.interpolateRemotePlayers();
+
+    if (this.alive) {
+      const spd = 400;
+      let ax = 0, ay = 0;
+      if (this.keys.a.isDown) ax = -spd;
+      if (this.keys.d.isDown) ax = spd;
+      if (this.keys.w.isDown) ay = -spd;
+      if (this.keys.s.isDown) ay = spd;
+      this.tank.setAcceleration(ax, ay);
+
+      const ptr = this.input.activePointer;
+      const angle = Phaser.Math.Angle.Between(this.tank.x, this.tank.y, ptr.worldX, ptr.worldY);
+      this.barrel.rotation = angle;
+      this.barrel.x = this.tank.x;
+      this.barrel.y = this.tank.y;
+
+      if (!this.lastSend || time > this.lastSend + 50) {
+        this.lastSend = time;
+        this.socket.emit('move', { x: this.tank.x, y: this.tank.y, angle: angle });
+      }
+
+      if (ptr.isDown && time > this.lastShot + 250) {
+        this.lastShot = time;
+        const bx = this.tank.x + Math.cos(angle) * 30;
+        const by = this.tank.y + Math.sin(angle) * 30;
+        this.spawnBullet(bx, by, angle, this.myId);
+        this.socket.emit('shoot', { x: bx, y: by, angle: angle });
+      }
+
+      this.checkItemPickup();
+    } else {
+      this.tank.setAcceleration(0, 0);
+      this.tank.setVelocity(0, 0);
+    }
+
+    this.checkBulletHits();
+    this.drawHealthBars();
+
+    this.bullets.getChildren().forEach(b => {
+      if (b.x < -20 || b.x > 820 || b.y < -20 || b.y > 620) b.destroy();
+    });
+  }
+}
+
+const config = {
+  type: Phaser.AUTO,
+  width: 800,
+  height: 600,
+  physics: {
+    default: 'arcade',
+    arcade: { gravity: { y: 0 }, debug: false }
+  },
+  scene: [PlayScene],
+};
+
+new Phaser.Game(config);
