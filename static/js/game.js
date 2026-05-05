@@ -48,7 +48,7 @@ class PlayScene extends Phaser.Scene {
 
     this.statusText = this.add.text(14, 14, 'Connecting...', {
       fontFamily: 'Courier New', fontSize: '14px', color: '#333',
-    });
+    }).setScrollFactor(0);
     this.add.text(14, 570, 'WASD move · Mouse aim · Click shoot', {
       fontFamily: 'Courier New', fontSize: '13px', color: '#888',
     });
@@ -403,7 +403,7 @@ class PlayScene extends Phaser.Scene {
     this.drawHealthBars();
 
     this.bullets.getChildren().forEach(b => {
-      if (b.x < -20 || b.x > 820 || b.y < -20 || b.y > 620) b.destroy();
+      if (b.x < -20 || b.x > 2020 || b.y < -20 || b.y > 2020) b.destroy();
     });
   }
 }
