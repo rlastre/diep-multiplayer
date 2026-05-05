@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login — Tank Arena</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a1a2e; color: #eee;
+    font-family: 'Courier New', monospace;
+    display: flex; justify-content: center; align-items: center; height: 100vh;
+  }
+  .container { background: #16213e; padding: 40px; border-radius: 8px; width: 340px; }
+  h1 { text-align: center; margin-bottom: 24px; color: #4488cc; }
+  label { display: block; margin-bottom: 6px; font-size: 14px; color: #aaa; }
+  input {
+    width: 100%; padding: 10px; margin-bottom: 16px;
+    border: 1px solid #333; border-radius: 4px;
+    background: #0f3460; color: #eee; font-family: inherit;
+  }
+  button {
+    width: 100%; padding: 12px; background: #4488cc; color: #fff;
+    border: none; border-radius: 4px; font-family: inherit; font-size: 16px; cursor: pointer;
+  }
+  button:hover { background: #3377bb; }
+  .error { background: #cc4444; padding: 8px; border-radius: 4px; margin-bottom: 16px; text-align: center; font-size: 13px; }
+  .link { text-align: center; margin-top: 16px; font-size: 13px; }
+  .link a { color: #4488cc; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Tank Arena</h1>
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+  <form method="POST">
+    <label>Username</label>
+    <input type="text" name="username" required autofocus>
+    <label>Password</label>
+    <input type="password" name="password" required>
+    <button type="submit">Log In</button>
+  </form>
+  <div class="link">No account? <a href="/signup">Sign up</a></div>
+</div>
+</body>
+</html>

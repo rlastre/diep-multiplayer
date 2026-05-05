@@ -1,5 +1,7 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for, session
 from flask_socketio import SocketIO, emit
+from werkzeug.security import generate_password_hash, check_password_hash
+from pymongo import MongoClient
 import random
 import os
 
@@ -7,10 +9,16 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-change-me')
 socketio = SocketIO(app, cors_allowed_origins="*", ping_timeout=10, ping_interval=5)
 
+# MongoDB
+MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/diep_game')
+mongo = MongoClient(MONGO_URI)
+db = mongo.get_default_database()
+users_collection = db['users']
+
+# Game state
 players = {}
 items = {}
 item_counter = 0
-
 COLORS = ['#4488cc', '#cc4444', '#44cc44', '#cc8844', '#8844cc', '#44cccc']
 START_HP = 100
 BULLET_DAMAGE = 25
@@ -26,62 +34,120 @@ def spawn_item():
     }
     return item_id
 
-
 for _ in range(3):
     spawn_item()
 
 
+# =============================================
+#  AUTH ROUTES
+# =============================================
 @app.route('/')
 def index():
-    return render_template('game.html')
+    if 'username' in session:
+        return redirect(url_for('game'))
+    return redirect(url_for('login'))
 
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '')
+        user = users_collection.find_one({'username': username})
+        if user and check_password_hash(user['password_hash'], password):
+            session['username'] = username
+            return redirect(url_for('game'))
+        else:
+            error = 'Invalid username or password'
+    return render_template('login.html', error=error)
+
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    error = None
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '')
+        if len(username) < 3:
+            error = 'Username must be at least 3 characters'
+        elif len(password) < 4:
+            error = 'Password must be at least 4 characters'
+        elif users_collection.find_one({'username': username}):
+            error = 'Username already taken'
+        else:
+            users_collection.insert_one({
+                'username': username,
+                'password_hash': generate_password_hash(password),
+                'high_score': 0,
+                'kills': 0,
+            })
+            session['username'] = username
+            return redirect(url_for('game'))
+    return render_template('signup.html', error=error)
+
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('login'))
+
+
+@app.route('/game')
+def game():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('game.html', username=session['username'])
+
+
+# =============================================
+#  SOCKET EVENTS
+# =============================================
 @socketio.on('connect')
 def on_connect():
-    color = random.choice(COLORS)
-    players[sid()] = {
+    username = session.get('username', 'Guest')
+    players[request.sid] = {
         'x': random.randint(100, 700),
         'y': random.randint(100, 500),
         'angle': 0,
-        'color': color,
+        'color': random.choice(COLORS),
         'scale': 1,
         'hp': START_HP,
         'alive': True,
+        'username': username,
     }
-    emit('init', {'id': sid(), 'players': players, 'items': items})
-    emit('player_joined', {'id': sid(), 'data': players[sid()]}, broadcast=True, include_self=False)
-    print(f'[+] {sid()} connected — {len(players)} players')
+    emit('init', {'id': request.sid, 'players': players, 'items': items})
+    emit('player_joined', {'id': request.sid, 'data': players[request.sid]}, broadcast=True, include_self=False)
+    print(f'[+] {username} connected — {len(players)} players')
 
 
 @socketio.on('disconnect')
 def on_disconnect():
-    players.pop(sid(), None)
-    emit('player_left', {'id': sid()}, broadcast=True)
-    print(f'[-] {sid()} disconnected — {len(players)} players')
+    who = players.get(request.sid, {}).get('username', '?')
+    players.pop(request.sid, None)
+    emit('player_left', {'id': request.sid}, broadcast=True)
+    print(f'[-] {who} disconnected — {len(players)} players')
 
 
 @socketio.on('move')
 def on_move(data):
-    if sid() in players and players[sid()]['alive']:
-        players[sid()]['x'] = data['x']
-        players[sid()]['y'] = data['y']
-        players[sid()]['angle'] = data['angle']
-        emit('player_moved', {'id': sid(), 'data': data}, broadcast=True, include_self=False)
+    if request.sid in players and players[request.sid]['alive']:
+        players[request.sid]['x'] = data['x']
+        players[request.sid]['y'] = data['y']
+        players[request.sid]['angle'] = data['angle']
+        emit('player_moved', {'id': request.sid, 'data': data}, broadcast=True, include_self=False)
 
 
 @socketio.on('shoot')
 def on_shoot(data):
-    if sid() in players and players[sid()]['alive']:
-        emit('player_shot', {'id': sid(), 'data': data}, broadcast=True, include_self=False)
+    if request.sid in players and players[request.sid]['alive']:
+        emit('player_shot', {'id': request.sid, 'data': data}, broadcast=True, include_self=False)
 
 
 @socketio.on('hit')
 def on_hit(data):
-    """A player reports their bullet hit another player."""
     target_id = data.get('target_id')
-    if target_id not in players:
-        return
-    if not players[target_id]['alive']:
+    if target_id not in players or not players[target_id]['alive']:
         return
 
     players[target_id]['hp'] -= BULLET_DAMAGE
@@ -89,22 +155,34 @@ def on_hit(data):
     if players[target_id]['hp'] <= 0:
         players[target_id]['hp'] = 0
         players[target_id]['alive'] = False
-        # Tell everyone this player died and who killed them
-        socketio.emit('player_died', {'id': target_id, 'killer_id': sid()})
+        killer_name = players.get(request.sid, {}).get('username', '?')
+        victim_name = players.get(target_id, {}).get('username', '?')
 
-        # Respawn after 3 seconds
-        def respawn():
-            socketio.sleep(3)
-            if target_id in players:
-                players[target_id]['hp'] = START_HP
-                players[target_id]['alive'] = True
-                players[target_id]['x'] = random.randint(100, 700)
-                players[target_id]['y'] = random.randint(100, 500)
-                players[target_id]['scale'] = 1
-                socketio.emit('player_respawned', {'id': target_id, 'data': players[target_id]})
-        socketio.start_background_task(respawn)
+        users_collection.update_one(
+            {'username': killer_name},
+            {'$inc': {'kills': 1}}
+        )
+
+        socketio.emit('player_died', {
+            'id': target_id,
+            'killer_id': request.sid,
+            'killer_name': killer_name,
+            'victim_name': victim_name,
+        })
+
+        def make_respawn(tid):
+            def do_respawn():
+                socketio.sleep(3)
+                if tid in players:
+                    players[tid]['hp'] = START_HP
+                    players[tid]['alive'] = True
+                    players[tid]['x'] = random.randint(100, 700)
+                    players[tid]['y'] = random.randint(100, 500)
+                    players[tid]['scale'] = 1
+                    socketio.emit('player_respawned', {'id': tid, 'data': players[tid]})
+            return do_respawn
+        socketio.start_background_task(make_respawn(target_id))
     else:
-        # Just damage, tell everyone the new hp
         socketio.emit('player_damaged', {'id': target_id, 'hp': players[target_id]['hp']})
 
 
@@ -113,20 +191,15 @@ def on_pickup(data):
     item_id = data.get('item_id')
     if item_id in items:
         del items[item_id]
-        if sid() in players:
-            players[sid()]['scale'] = 3
-        socketio.emit('item_picked', {'item_id': item_id, 'player_id': sid(), 'scale': 3})
+        if request.sid in players:
+            players[request.sid]['scale'] = 3
+        socketio.emit('item_picked', {'item_id': item_id, 'player_id': request.sid, 'scale': 3})
 
         def respawn():
             socketio.sleep(5)
             new_id = spawn_item()
             socketio.emit('item_spawned', {'item_id': new_id, 'data': items[new_id]})
         socketio.start_background_task(respawn)
-
-
-def sid():
-    from flask import request
-    return request.sid
 
 
 if __name__ == '__main__':
