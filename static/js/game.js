@@ -236,7 +236,7 @@ class PlayScene extends Phaser.Scene {
       fontFamily: 'Courier New', fontSize: '11px', color: '#333',
     }).setOrigin(0.5).setDepth(51);
 
-    this.cameras.startFollow(this.tank, true, .08, .08); 
+    this.cameras.main.startFollow(this.tank, true, .08, .08); 
   }
 
   addRemotePlayer(pid, data) {
