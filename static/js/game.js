@@ -54,7 +54,11 @@ class PlayScene extends Phaser.Scene {
       stroke: '#000', strokeThickness: 3,
     }).setOrigin(0.5).setDepth(200);
 
-    this.socket = io({ reconnectionAttempts: 5, query: { username: window.PLAYER_NAME } });
+    this.socket = io({ 
+        reconnectionAttempts: 5, 
+        query: { username: window.PLAYER_NAME },
+        transports: ['websocket']   
+    });
 
     this.socket.on('init', (data) => {
       this.myId = data.id;
@@ -104,7 +108,7 @@ class PlayScene extends Phaser.Scene {
     this.socket.on('player_shot', (data) => {
       this.spawnBullet(data.data.x, data.data.y, data.data.angle, data.id);
     });
-
+6
     this.socket.on('player_damaged', (data) => {
       if (data.id === this.myId) {
         this.myHp = data.hp;
