@@ -57,7 +57,11 @@ class PlayScene extends Phaser.Scene {
       stroke: '#000', strokeThickness: 3,
     }).setOrigin(0.5).setDepth(200);
 
-    this.socket = io({ reconnectionAttempts: 5, query: { username: window.PLAYER_NAME } });
+    this.socket = io({ 
+        reconnectionAttempts: 5, 
+        query: { username: window.PLAYER_NAME },
+        transports: ['websocket']   
+    });
 
     this.socket.on('init', (data) => {
       this.myId = data.id;
@@ -107,7 +111,7 @@ class PlayScene extends Phaser.Scene {
     this.socket.on('player_shot', (data) => {
       this.spawnBullet(data.data.x, data.data.y, data.data.angle, data.id);
     });
-
+6
     this.socket.on('player_damaged', (data) => {
       if (data.id === this.myId) {
         this.myHp = data.hp;
@@ -175,6 +179,7 @@ class PlayScene extends Phaser.Scene {
     });
   }
 
+  // Items
   addItem(id, data) {
     if (this.itemSprites[id]) return;
     const sprite = this.physics.add.image(data.x, data.y, 'powerup');
@@ -198,6 +203,7 @@ class PlayScene extends Phaser.Scene {
     }
   }
 
+  // Tanks
   createLocalTank(x, y, color) {
     const hexColor = parseInt(color.replace('#', ''), 16);
     const darkerHex = Phaser.Display.Color.ValueToColor(hexColor).darken(20).color;

@@ -1,6 +1,6 @@
 flask
 flask-socketio
 eventlet
-gunicorn
+gunicorn==22.0.0
 pymongo[srv]
 dnspython
