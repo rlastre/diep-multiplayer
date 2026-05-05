@@ -28,7 +28,7 @@ class PlayScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#e8e4d8');
     
     this.physics.world.setBounds(0, 0, 2000, 2000);
-    camera.setBounds(0, 0, 2000, 2000)
+    this.cameras.main.setBounds(0, 0, 2000, 2000);
 
     const grid = this.add.graphics();
     grid.lineStyle(0.5, 0x000000, 0.07);
