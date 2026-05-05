@@ -32,8 +32,8 @@ class PlayScene extends Phaser.Scene {
 
     const grid = this.add.graphics();
     grid.lineStyle(0.5, 0x000000, 0.07);
-    for (let x = 0; x <= 2000; x += 40) grid.lineBetween(x, 0, x, 600);
-    for (let y = 0; y <= 2000; y += 40) grid.lineBetween(0, y, 800, y);
+    for (let x = 0; x <= 2000; x += 40) grid.lineBetween(x, 0, x, 2000);
+    for (let y = 0; y <= 2000; y += 40) grid.lineBetween(0, y, 2000, y);
 
     this.bullets = this.physics.add.group();
     this.hpGraphics = this.add.graphics().setDepth(50);
@@ -51,11 +51,11 @@ class PlayScene extends Phaser.Scene {
     }).setScrollFactor(0);
     this.add.text(14, 570, 'WASD move · Mouse aim · Click shoot', {
       fontFamily: 'Courier New', fontSize: '13px', color: '#888',
-    });
+    }).setScrollFactor(0);
     this.deathText = this.add.text(400, 300, '', {
       fontFamily: 'Courier New', fontSize: '22px', color: '#cc0000',
       stroke: '#000', strokeThickness: 3,
-    }).setOrigin(0.5).setDepth(200);
+    }).setOrigin(0.5).setDepth(200).setScrollFactor(0);
 
     this.socket = io({ 
         reconnectionAttempts: 5, 
