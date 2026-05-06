@@ -8,6 +8,7 @@ class PlayScene extends Phaser.Scene {
     this.myColor = '#4488cc';
     this.myHp = 100;
     this.alive = true;
+    this.currentAngle = 0;
   }
 
   preload() {
@@ -180,15 +181,19 @@ class PlayScene extends Phaser.Scene {
       this.addItem(data.item_id, data.data);
     });
 
-    // Sync barrel and name tag AFTER physics moves the tank
+    // All visuals sync AFTER physics — no jitter
     this.events.on('postupdate', () => {
-      if (!this.tank || !this.alive) return;
-      this.barrel.x = this.tank.x;
-      this.barrel.y = this.tank.y;
-      if (this.myNameTag) {
-        this.myNameTag.x = this.tank.x;
-        this.myNameTag.y = this.tank.y - 36;
+      if (!this.tank) return;
+      if (this.alive) {
+        this.barrel.x = this.tank.x;
+        this.barrel.y = this.tank.y;
+        this.barrel.rotation = this.currentAngle;
+        if (this.myNameTag) {
+          this.myNameTag.x = this.tank.x;
+          this.myNameTag.y = this.tank.y - 36;
+        }
       }
+      this.drawHealthBars();
     });
   }
 
@@ -385,20 +390,19 @@ class PlayScene extends Phaser.Scene {
       this.tank.setVelocity(vx, vy);
 
       const ptr = this.input.activePointer;
-      const angle = Phaser.Math.Angle.Between(this.tank.x, this.tank.y, ptr.worldX, ptr.worldY);
-      this.barrel.rotation = angle;
+      this.currentAngle = Phaser.Math.Angle.Between(this.tank.x, this.tank.y, ptr.worldX, ptr.worldY);
 
       if (!this.lastSend || time > this.lastSend + 50) {
         this.lastSend = time;
-        this.socket.emit('move', { x: this.tank.x, y: this.tank.y, angle: angle });
+        this.socket.emit('move', { x: this.tank.x, y: this.tank.y, angle: this.currentAngle });
       }
 
       if (ptr.isDown && time > this.lastShot + 250) {
         this.lastShot = time;
-        const bx = this.tank.x + Math.cos(angle) * 30;
-        const by = this.tank.y + Math.sin(angle) * 30;
-        this.spawnBullet(bx, by, angle, this.myId);
-        this.socket.emit('shoot', { x: bx, y: by, angle: angle });
+        const bx = this.tank.x + Math.cos(this.currentAngle) * 30;
+        const by = this.tank.y + Math.sin(this.currentAngle) * 30;
+        this.spawnBullet(bx, by, this.currentAngle, this.myId);
+        this.socket.emit('shoot', { x: bx, y: by, angle: this.currentAngle });
       }
 
       this.checkItemPickup();
@@ -407,7 +411,6 @@ class PlayScene extends Phaser.Scene {
     }
 
     this.checkBulletHits();
-    this.drawHealthBars();
 
     this.bullets.getChildren().forEach(b => {
       if (b.x < -20 || b.x > 2020 || b.y < -20 || b.y > 2020) b.destroy();
