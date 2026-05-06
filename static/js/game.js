@@ -26,14 +26,14 @@ class PlayScene extends Phaser.Scene {
 
   create() {
     this.cameras.main.setBackgroundColor('#e8e4d8');
-    
     this.physics.world.setBounds(0, 0, 2000, 2000);
     this.cameras.main.setBounds(0, 0, 2000, 2000);
+    this.cameras.main.setRoundPixels(false);
 
     const grid = this.add.graphics();
     grid.lineStyle(0.5, 0x000000, 0.07);
-    for (let x = 0; x <= 2000; x += 40) grid.lineBetween(x, 0, x, 600);
-    for (let y = 0; y <= 2000; y += 40) grid.lineBetween(0, y, 800, y);
+    for (let x = 0; x <= 2000; x += 40) grid.lineBetween(x, 0, x, 2000);
+    for (let y = 0; y <= 2000; y += 40) grid.lineBetween(0, y, 2000, y);
 
     this.bullets = this.physics.add.group();
     this.hpGraphics = this.add.graphics().setDepth(50);
@@ -48,19 +48,21 @@ class PlayScene extends Phaser.Scene {
 
     this.statusText = this.add.text(14, 14, 'Connecting...', {
       fontFamily: 'Courier New', fontSize: '14px', color: '#333',
-    });
+    }).setScrollFactor(0);
+
     this.add.text(14, 570, 'WASD move · Mouse aim · Click shoot', {
       fontFamily: 'Courier New', fontSize: '13px', color: '#888',
-    });
+    }).setScrollFactor(0);
+
     this.deathText = this.add.text(400, 300, '', {
       fontFamily: 'Courier New', fontSize: '22px', color: '#cc0000',
       stroke: '#000', strokeThickness: 3,
-    }).setOrigin(0.5).setDepth(200);
+    }).setOrigin(0.5).setDepth(200).setScrollFactor(0);
 
-    this.socket = io({ 
-        reconnectionAttempts: 5, 
-        query: { username: window.PLAYER_NAME },
-        transports: ['websocket']   
+    this.socket = io({
+      reconnectionAttempts: 5,
+      query: { username: window.PLAYER_NAME },
+      transports: ['websocket']
     });
 
     this.socket.on('init', (data) => {
@@ -111,7 +113,7 @@ class PlayScene extends Phaser.Scene {
     this.socket.on('player_shot', (data) => {
       this.spawnBullet(data.data.x, data.data.y, data.data.angle, data.id);
     });
-6
+
     this.socket.on('player_damaged', (data) => {
       if (data.id === this.myId) {
         this.myHp = data.hp;
@@ -177,6 +179,17 @@ class PlayScene extends Phaser.Scene {
     this.socket.on('item_spawned', (data) => {
       this.addItem(data.item_id, data.data);
     });
+
+    // Sync barrel and name tag AFTER physics moves the tank
+    this.events.on('postupdate', () => {
+      if (!this.tank || !this.alive) return;
+      this.barrel.x = this.tank.x;
+      this.barrel.y = this.tank.y;
+      if (this.myNameTag) {
+        this.myNameTag.x = this.tank.x;
+        this.myNameTag.y = this.tank.y - 36;
+      }
+    });
   }
 
   // Items
@@ -224,8 +237,6 @@ class PlayScene extends Phaser.Scene {
 
     this.tank = this.physics.add.image(x, y, 'tank_local');
     this.tank.setCollideWorldBounds(true);
-    this.tank.setDrag(400);
-    this.tank.setMaxVelocity(180);
     this.tank.setDepth(1);
 
     this.barrel = this.add.image(x, y, 'barrel_local');
@@ -236,7 +247,7 @@ class PlayScene extends Phaser.Scene {
       fontFamily: 'Courier New', fontSize: '11px', color: '#333',
     }).setOrigin(0.5).setDepth(51);
 
-    this.cameras.main.startFollow(this.tank, true, .08, .08); 
+    this.cameras.main.startFollow(this.tank, true, 1, 1);
   }
 
   addRemotePlayer(pid, data) {
@@ -352,7 +363,6 @@ class PlayScene extends Phaser.Scene {
     };
     if (this.tank && this.alive) {
       drawBar(this.tank.x, this.tank.y, this.myHp);
-      if (this.myNameTag) { this.myNameTag.x = this.tank.x; this.myNameTag.y = this.tank.y - 36; }
     }
     for (const r of Object.values(this.otherPlayers)) {
       if (!r.alive) continue;
@@ -366,19 +376,17 @@ class PlayScene extends Phaser.Scene {
     this.interpolateRemotePlayers();
 
     if (this.alive) {
-      const spd = 400;
-      let ax = 0, ay = 0;
-      if (this.keys.a.isDown) ax = -spd;
-      if (this.keys.d.isDown) ax = spd;
-      if (this.keys.w.isDown) ay = -spd;
-      if (this.keys.s.isDown) ay = spd;
-      this.tank.setAcceleration(ax, ay);
+      const spd = 180;
+      let vx = 0, vy = 0;
+      if (this.keys.a.isDown) vx = -spd;
+      if (this.keys.d.isDown) vx = spd;
+      if (this.keys.w.isDown) vy = -spd;
+      if (this.keys.s.isDown) vy = spd;
+      this.tank.setVelocity(vx, vy);
 
       const ptr = this.input.activePointer;
       const angle = Phaser.Math.Angle.Between(this.tank.x, this.tank.y, ptr.worldX, ptr.worldY);
       this.barrel.rotation = angle;
-      this.barrel.x = this.tank.x;
-      this.barrel.y = this.tank.y;
 
       if (!this.lastSend || time > this.lastSend + 50) {
         this.lastSend = time;
@@ -395,7 +403,6 @@ class PlayScene extends Phaser.Scene {
 
       this.checkItemPickup();
     } else {
-      this.tank.setAcceleration(0, 0);
       this.tank.setVelocity(0, 0);
     }
 
@@ -403,7 +410,7 @@ class PlayScene extends Phaser.Scene {
     this.drawHealthBars();
 
     this.bullets.getChildren().forEach(b => {
-      if (b.x < -20 || b.x > 820 || b.y < -20 || b.y > 620) b.destroy();
+      if (b.x < -20 || b.x > 2020 || b.y < -20 || b.y > 2020) b.destroy();
     });
   }
 }
