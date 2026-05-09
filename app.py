@@ -60,7 +60,7 @@ def login():
         user = users_collection.find_one({'username': username})
         if user and check_password_hash(user['password_hash'], password):
             session['username'] = username
-            return redirect(url_for('game'))
+            return redirect(url_for('homePage'))
         else:
             error = 'Invalid username or password'
     return render_template('login.html', error=error)
@@ -86,7 +86,7 @@ def signup():
                 'kills': 0,
             })
             session['username'] = username
-            return redirect(url_for('game'))
+            return redirect(url_for('homePage'))
     return render_template('signup.html', error=error)
 
 
@@ -95,6 +95,11 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('login'))
 
+@app.route('/homePage')
+def homePage():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('homePage.html', username=session['username'])
 
 @app.route('/game')
 def game():

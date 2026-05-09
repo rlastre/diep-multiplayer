@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Tank Arena</title>
+
+    <style>
+        body {
+            height: 100vh;
+            font-family: 'Ubuntu', san-serif;
+
+            background-image: url("{{url_for ('static', filename = 'tankArena1.png')}}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .parentContainer {
+            position: fixed;
+            bottom: 80px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 40px;
+            color: slategray;
+            font-weight: bold;
+            margin-top: 30px;
+        }
+
+        .logout {
+            top: 20px;
+            left: 20px;
+            position: fixed;
+        }
+
+        .logout button{
+            font-size: 16px;
+            background-color: lightcoral;
+            color: slategrey;
+        }
+
+        .playGame button {
+            width: 250px;
+            height: 50px;
+            background-color: lightgreen;
+            color: slategrey;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div style = "text-align: center;">
+        <div class = "title"> 
+                    <h1> Tank Arena </h1>
+        </div>
+
+        <div class = "parentContainer">
+            <div class = "playGame"> 
+                    <a href = "{{url_for ('game')}}"> <button> Play Game </button></a>
+            </div>
+        </div>
+
+        <div class = "logout"> 
+            <a href = "{{url_for ('logout')}}"><button> Logout </button></a>
+        </div>
+    </div>
+</body>
+</html>
