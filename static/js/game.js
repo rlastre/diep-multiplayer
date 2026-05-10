@@ -406,6 +406,7 @@ class PlayScene extends Phaser.Scene {
       this.tank.setVelocity(vx, vy);
 
       const ptr = this.input.activePointer;
+      ptr.updateWorldPoint(this.cameras.main);
       if (this.pointerReady) {
         this.currentAngle = Phaser.Math.Angle.Between(this.tank.x, this.tank.y, ptr.worldX, ptr.worldY);
       }
