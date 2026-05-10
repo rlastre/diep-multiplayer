@@ -7,7 +7,7 @@ class PlayScene extends Phaser.Scene {
     this.myId = null;
     this.myColor = '#4488cc';
     this.myHp = 100;
-    this.myMaxhp = 100;
+    this.myMaxHp = 100;
     this.alive = true;
     this.currentAngle = 0;
   }
@@ -47,6 +47,8 @@ class PlayScene extends Phaser.Scene {
       d: Phaser.Input.Keyboard.KeyCodes.D,
     });
     this.lastShot = 0;
+    this.pointerReady = false;
+    this.input.on('pointermove', () => { this.pointerReady = true; });
 
     this.statusText = this.add.text(14, 14, 'Connecting...', {
       fontFamily: 'Courier New', fontSize: '14px', color: '#333',
@@ -72,7 +74,7 @@ class PlayScene extends Phaser.Scene {
       const me = data.players[this.myId];
       this.myColor = me.color;
       this.myHp = me.hp;
-      this.myMaxhp = me.max_hp|| 100;
+      this.myMaxHp = me.max_hp || 100;
       this.alive = me.alive;
 
       this.clearAllRemotePlayers();
@@ -126,16 +128,14 @@ class PlayScene extends Phaser.Scene {
     });
 
     this.socket.on('hp_update', (data) => {
-      if(data.id === this.myId){
+      if (data.id === this.myId) {
         this.myHp = data.hp;
-        this.myMaxhp = data.max_hp;
-      }
-      else if (this.otherPlayers[data.id]){
+        this.myMaxHp = data.max_hp;
+      } else if (this.otherPlayers[data.id]) {
         this.otherPlayers[data.id].hp = data.hp;
         this.otherPlayers[data.id].maxHp = data.max_hp;
       }
     });
-      
 
     this.socket.on('player_died', (data) => {
       if (data.id === this.myId) {
@@ -157,6 +157,7 @@ class PlayScene extends Phaser.Scene {
       if (data.id === this.myId) {
         this.alive = true;
         this.myHp = data.data.hp;
+        this.myMaxHp = data.data.max_hp || 100;
         this.tank.setPosition(data.data.x, data.data.y);
         this.tank.setScale(data.data.scale || 1);
         this.barrel.setScale(data.data.scale || 1);
@@ -176,6 +177,7 @@ class PlayScene extends Phaser.Scene {
         r.barrel.setVisible(true);
         if (r.nameTag) r.nameTag.setVisible(true);
         r.hp = data.data.hp;
+        r.maxHp = data.data.max_hp || 100;
         r.alive = true;
       }
     });
@@ -381,7 +383,7 @@ class PlayScene extends Phaser.Scene {
       this.hpGraphics.fillRect(bx, by, w * pct, h);
     };
     if (this.tank && this.alive) {
-      drawBar(this.tank.x, this.tank.y, this.myHp, this.myMaxhp);
+      drawBar(this.tank.x, this.tank.y, this.myHp, this.myMaxHp);
     }
     for (const r of Object.values(this.otherPlayers)) {
       if (!r.alive) continue;
@@ -404,14 +406,16 @@ class PlayScene extends Phaser.Scene {
       this.tank.setVelocity(vx, vy);
 
       const ptr = this.input.activePointer;
-      this.currentAngle = Phaser.Math.Angle.Between(this.tank.x, this.tank.y, ptr.worldX, ptr.worldY);
+      if (this.pointerReady) {
+        this.currentAngle = Phaser.Math.Angle.Between(this.tank.x, this.tank.y, ptr.worldX, ptr.worldY);
+      }
 
       if (!this.lastSend || time > this.lastSend + 50) {
         this.lastSend = time;
         this.socket.emit('move', { x: this.tank.x, y: this.tank.y, angle: this.currentAngle });
       }
 
-      if (ptr.isDown && time > this.lastShot + 250) {
+      if (this.pointerReady && ptr.isDown && time > this.lastShot + 250) {
         this.lastShot = time;
         const bx = this.tank.x + Math.cos(this.currentAngle) * 30;
         const by = this.tank.y + Math.sin(this.currentAngle) * 30;
