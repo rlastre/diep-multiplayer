@@ -418,6 +418,7 @@ class PlayScene extends Phaser.Scene {
 
       if (this.pointerReady && ptr.isDown && time > this.lastShot + 250) {
         this.lastShot = time;
+        const barrelTip = 28 * this.barrel.scaleX + 4;
         const bx = this.tank.x + Math.cos(this.currentAngle) * 30;
         const by = this.tank.y + Math.sin(this.currentAngle) * 30;
         this.spawnBullet(bx, by, this.currentAngle, this.myId);
