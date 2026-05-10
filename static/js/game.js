@@ -7,6 +7,7 @@ class PlayScene extends Phaser.Scene {
     this.myId = null;
     this.myColor = '#4488cc';
     this.myHp = 100;
+    this.myMaxhp = 100;
     this.alive = true;
     this.currentAngle = 0;
   }
@@ -71,6 +72,7 @@ class PlayScene extends Phaser.Scene {
       const me = data.players[this.myId];
       this.myColor = me.color;
       this.myHp = me.hp;
+      this.myMaxhp = me.max_hp|| 100;
       this.alive = me.alive;
 
       this.clearAllRemotePlayers();
@@ -122,6 +124,18 @@ class PlayScene extends Phaser.Scene {
         this.otherPlayers[data.id].hp = data.hp;
       }
     });
+
+    this.socket.on('hp_update', (data) => {
+      if(data.id === this.myId){
+        this.myHp = data.hp;
+        this.myMaxhp = data.max_hp;
+      }
+      else if (this.otherPlayers[data.id]){
+        this.otherPlayers[data.id].hp = data.hp;
+        this.otherPlayers[data.id].maxHp = data.max_hp;
+      }
+    });
+      
 
     this.socket.on('player_died', (data) => {
       if (data.id === this.myId) {
@@ -291,7 +305,7 @@ class PlayScene extends Phaser.Scene {
 
     this.otherPlayers[pid] = {
       tank, barrel, nameTag,
-      hp: data.hp, alive: data.alive,
+      hp: data.hp, maxHp: data.max_hp || 100, alive: data.alive,
       targetX: data.x, targetY: data.y, targetAngle: data.angle || 0,
     };
   }
@@ -357,21 +371,21 @@ class PlayScene extends Phaser.Scene {
 
   drawHealthBars() {
     this.hpGraphics.clear();
-    const drawBar = (x, y, hp) => {
+    const drawBar = (x, y, hp, maxHp) => {
       const w = 40, h = 5, bx = x - w / 2, by = y - 26;
       this.hpGraphics.fillStyle(0x333333, 0.5);
       this.hpGraphics.fillRect(bx, by, w, h);
-      const pct = Math.max(0, hp / 100);
+      const pct = Math.max(0, hp / maxHp);
       const color = pct > 0.5 ? 0x44cc44 : pct > 0.25 ? 0xcccc44 : 0xcc4444;
       this.hpGraphics.fillStyle(color, 0.9);
       this.hpGraphics.fillRect(bx, by, w * pct, h);
     };
     if (this.tank && this.alive) {
-      drawBar(this.tank.x, this.tank.y, this.myHp);
+      drawBar(this.tank.x, this.tank.y, this.myHp, this.myMaxhp);
     }
     for (const r of Object.values(this.otherPlayers)) {
       if (!r.alive) continue;
-      drawBar(r.tank.x, r.tank.y, r.hp || 100);
+      drawBar(r.tank.x, r.tank.y, r.hp || 100, r.maxHp || 100);
     }
   }
 

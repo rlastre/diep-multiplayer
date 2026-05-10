@@ -24,9 +24,25 @@ items = {}
 item_counter = 0
 COLORS = ['#4488cc', '#cc4444', '#44cc44', '#cc8844', '#8844cc', '#44cccc']
 START_HP = 100
+START_MAX_HP = 100
 BULLET_DAMAGE = 25
 
+def adjust_max_hp(sid, reason, **kwargs):
+    
+    p =players.get(sid)
+    if not p:
+        return
+    if reason == 'powerup':
+        p['max_hp'] = 300
+        p['hp'] = min(p['hp']+ 200, p['max_hp'])
 
+
+
+    socketio.emit('hp_update', {
+        'id': sid,
+        'hp': p['hp'],
+        'max_hp': p['max_hp'],
+    })
 def spawn_item():
     global item_counter
     item_counter += 1
@@ -121,6 +137,7 @@ def on_connect():
         'color': random.choice(COLORS),
         'scale': 1,
         'hp': START_HP,
+        'max_hp': START_MAX_HP,
         'alive': True,
         'username': username,
     }
@@ -183,6 +200,7 @@ def on_hit(data):
                 socketio.sleep(3)
                 if tid in players:
                     players[tid]['hp'] = START_HP
+                    players[tid]['max_hp'] = START_MAX_HP
                     players[tid]['alive'] = True
                     players[tid]['x'] = random.randint(100, 1900)
                     players[tid]['y'] = random.randint(100, 1900)
@@ -201,6 +219,7 @@ def on_pickup(data):
         del items[item_id]
         if request.sid in players:
             players[request.sid]['scale'] = 3
+            adjust_max_hp(request.sid, 'powerup')
         socketio.emit('item_picked', {'item_id': item_id, 'player_id': request.sid, 'scale': 3})
 
         def respawn():
