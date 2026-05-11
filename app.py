@@ -14,9 +14,9 @@ socketio = SocketIO(app, cors_allowed_origins="*", ping_timeout=10, ping_interva
 
 # MongoDB
 MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/diep_game')
-# mongo = MongoClient(MONGO_URI)
-# db = mongo.get_default_database()
-# users_collection = db['users']
+mongo = MongoClient(MONGO_URI)
+db = mongo.get_default_database()
+users_collection = db['users']
 
 # Game state
 players = {}
@@ -105,7 +105,6 @@ def index():
 def login():
     error = None
     if request.method == 'POST':
-        """
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '')
         user = users_collection.find_one({'username': username})
@@ -114,9 +113,6 @@ def login():
             return redirect(url_for('homePage'))
         else:
             error = 'Invalid username or password'
-        """
-        session['username'] = 'placeholder'
-        return redirect(url_for('homePage'))
     return render_template('login.html', error=error)
 
 
@@ -254,12 +250,10 @@ def on_hit(data):
         killer_name = players.get(request.sid, {}).get('username', '?')
         victim_name = players.get(target_id, {}).get('username', '?')
 
-        """
         users_collection.update_one(
             {'username': killer_name},
             {'$inc': {'kills': 1}}
         )
-        """
 
         socketio.emit('player_died', {
             'id': target_id,
