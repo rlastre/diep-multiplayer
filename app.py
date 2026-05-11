@@ -32,7 +32,7 @@ CLASS_STATS = {
     'scout': {
         'hp': 70,
         'max_hp': 70,
-        'speed': 300,
+        'speed': 150,
         'bullet_damage': 45,
         'fire_rate': 800,
         'bullet_speed': 700,
@@ -40,17 +40,17 @@ CLASS_STATS = {
     'assault': {
         'hp': 100,
         'max_hp': 100,
-        'speed': 200,
+        'speed': 350,
         'bullet_damage': 10,
-        'fire_rate': 400,
-        'bullet_speed': 600,
+        'fire_rate': 100,
+        'bullet_speed': 300,
     },
     'support': {
         'hp': 170,
         'max_hp': 170,
-        'speed': 50,
-        'bullet_damage': 20,
-        'fire_rate': 220,
+        'speed': 75,
+        'bullet_damage': 30,
+        'fire_rate': 280,
         'bullet_speed': 400,
     },
     'medic': {
