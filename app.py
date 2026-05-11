@@ -100,6 +100,7 @@ def signup():
                 'password_hash': generate_password_hash(password),
                 'high_score': 0,
                 'kills': 0,
+                'equipped_skin': '#708090'
             })
             session['username'] = username
             return redirect(url_for('homePage'))
@@ -123,6 +124,31 @@ def game():
         return redirect(url_for('login'))
     return render_template('game.html', username=session['username'])
 
+@app.route('/customize')
+def customize():
+    if 'username' not in session: 
+        return redirect(url_for('login'))
+    
+    user_data = users_collection.find_one({'username': session['username']})
+    
+    return render_template('customize.html', 
+                           kills=user_data.get('kills', 0), 
+                           current_skin=user_data.get('equipped_skin', '#708090'))
+
+@app.route('/equip_skin', methods=['POST'])
+def equip_skin():
+    if 'username' not in session:
+        return 'Unauthorized', 401
+    
+    new_hex = request.form.get('color_hex')
+    if new_hex:
+        users_collection.update_one(
+            {'username': session['username']},
+            {'$set': {'equipped_skin': new_hex}}
+        )
+        return '', 204
+    return 'Invalid data', 400
+
 
 # =============================================
 #  SOCKET EVENTS
@@ -130,11 +156,14 @@ def game():
 @socketio.on('connect')
 def on_connect():
     username = request.args.get('username',session.get('username','Guest'))
+    user_data = users_collection.find_one({'username': username})
+    equipped_color = user_data.get('equipped_skin', random.choice(COLORS)) if user_data else random.choice(COLORS)
+
     players[request.sid] = {
         'x': random.randint(100, 1900),
         'y': random.randint(100, 1900),
         'angle': 0,
-        'color': random.choice(COLORS),
+        'color': equipped_color,
         'scale': 1,
         'hp': START_HP,
         'max_hp': START_MAX_HP,
