@@ -25,7 +25,7 @@ item_counter = 0
 COLORS = ['#4488cc', '#cc4444', '#44cc44', '#cc8844', '#8844cc', '#44cccc']
 START_HP = 100
 START_MAX_HP = 100
-BULLET_DAMAGE = 25
+BULLET_DAMAGE = 100
 
 # Class stats - each class has its own balance
 CLASS_STATS = {
