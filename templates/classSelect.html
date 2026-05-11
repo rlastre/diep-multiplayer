@@ -90,6 +90,26 @@
             <div class="class-desc">Balanced fighter. Standard HP, speed, and firepower.</div>
         </a>
 
+        <a href="{{ url_for('game', tank_class='medic') }}" class="class-card">
+            <img src="{{ url_for('static', filename='medic_icon.png') }}" alt="Medic">
+            <div class="class-name">Medic</div>
+            <div class="class-desc">Extra HP but regular damage and speed.</div>
+        </a>
+
+        <!-- Scout -->
+        <a href="{{ url_for('game', tank_class='scout') }}" class="class-card">
+            <img src="{{ url_for('static', filename='scout.png') }}" alt="Scout">
+            <div class="class-name">Scout</div>
+            <div class="class-desc">High damage output but lower bullet speed and perks</div>
+        </a>
+
+        <!-- Support -->
+        <a href="{{ url_for('game', tank_class='support') }}" class="class-card">
+            <img src="{{ url_for('static', filename='support_class.png') }}" alt="Support">
+            <div class="class-name">Support</div>
+            <div class="class-desc">Tankiest class. High HP, balanced fire rate, slower movement.</div>
+        </a>
+
     </div>
 
 </body>

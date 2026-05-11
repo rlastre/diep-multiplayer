@@ -25,38 +25,38 @@ item_counter = 0
 COLORS = ['#4488cc', '#cc4444', '#44cc44', '#cc8844', '#8844cc', '#44cccc']
 START_HP = 100
 START_MAX_HP = 100
-BULLET_DAMAGE = 25
+BULLET_DAMAGE = 100
 
 # Class stats - each class has its own balance
 CLASS_STATS = {
     'scout': {
         'hp': 70,
         'max_hp': 70,
-        'speed': 250,
-        'bullet_damage': 20,
-        'fire_rate': 200,
-        'bullet_speed': 400,
+        'speed': 300,
+        'bullet_damage': 45,
+        'fire_rate': 1,
+        'bullet_speed': 700,
     },
     'assault': {
         'hp': 100,
         'max_hp': 100,
-        'speed': 180,
-        'bullet_damage': 25,
-        'fire_rate': 250,
-        'bullet_speed': 550,
+        'speed': 200,
+        'bullet_damage': 10,
+        'fire_rate': 400,
+        'bullet_speed': 600,
     },
     'support': {
-        'hp': 150,
-        'max_hp': 150,
-        'speed': 140,
-        'bullet_damage': 30,
-        'fire_rate': 350,
+        'hp': 170,
+        'max_hp': 170,
+        'speed': 50,
+        'bullet_damage': 20,
+        'fire_rate': 220,
         'bullet_speed': 400,
     },
     'medic': {
         'hp': 120,
         'max_hp': 120,
-        'speed': 160,
+        'speed': 140,
         'bullet_damage': 15,
         'fire_rate': 400,
         'bullet_speed': 350,
@@ -190,20 +190,26 @@ def game():
 @socketio.on('connect')
 def on_connect():
     username = request.args.get('username', session.get('username', 'Guest'))
+    tank_class = request.args.get('tank_class', 'assault')
+    if tank_class not in CLASS_STATS:
+        tank_class = 'assault'
+    stats = CLASS_STATS[tank_class]
     players[request.sid] = {
         'x': random.randint(100, 1900),
         'y': random.randint(100, 1900),
         'angle': 0,
         'color': random.choice(COLORS),
         'scale': 1,
-        'hp': START_HP,
-        'max_hp': START_MAX_HP,
+        'hp': stats['hp'],
+        'max_hp': stats['max_hp'],
         'alive': True,
         'username': username,
+        'tank_class': tank_class,
+        'bullet_damage': stats['bullet_damage'],
     }
     emit('init', {'id': request.sid, 'players': players, 'items': items})
     emit('player_joined', {'id': request.sid, 'data': players[request.sid]}, broadcast=True, include_self=False)
-    print(f'[+] {username} connected — {len(players)} players')
+    print(f'[+] {username} ({tank_class}) connected — {len(players)} players')
 
 
 @socketio.on('disconnect')
@@ -229,13 +235,18 @@ def on_shoot(data):
         emit('player_shot', {'id': request.sid, 'data': data}, broadcast=True, include_self=False)
 
 
+
 @socketio.on('hit')
 def on_hit(data):
     target_id = data.get('target_id')
     if target_id not in players or not players[target_id]['alive']:
         return
 
-    players[target_id]['hp'] -= BULLET_DAMAGE
+    # Use the attacker's class-specific bullet damage
+    attacker = players.get(request.sid, {})
+    damage = attacker.get('bullet_damage', BULLET_DAMAGE)
+    players[target_id]['hp'] -= damage
+    print(f'[HIT] {attacker.get("username","?")} ({attacker.get("tank_class","?")}) dealt {damage} dmg to {players[target_id].get("username","?")} — HP: {players[target_id]["hp"]}/{players[target_id]["max_hp"]}')
 
     if players[target_id]['hp'] <= 0:
         players[target_id]['hp'] = 0
@@ -261,8 +272,11 @@ def on_hit(data):
             def do_respawn():
                 socketio.sleep(3)
                 if tid in players:
-                    players[tid]['hp'] = START_HP
-                    players[tid]['max_hp'] = START_MAX_HP
+                    # Respawn with class-specific HP
+                    p_class = players[tid].get('tank_class', 'assault')
+                    p_stats = CLASS_STATS.get(p_class, CLASS_STATS['assault'])
+                    players[tid]['hp'] = p_stats['hp']
+                    players[tid]['max_hp'] = p_stats['max_hp']
                     players[tid]['alive'] = True
                     players[tid]['x'] = random.randint(100, 1900)
                     players[tid]['y'] = random.randint(100, 1900)

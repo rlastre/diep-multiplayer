@@ -6,8 +6,8 @@ class PlayScene extends Phaser.Scene {
     this.itemSprites = {};
     this.myId = null;
     this.myColor = '#4488cc';
-    this.myHp = 100;
-    this.myMaxHp = 100;
+    this.myHp = window.CLASS_STATS ? window.CLASS_STATS.hp : 100;
+    this.myMaxHp = window.CLASS_STATS ? window.CLASS_STATS.max_hp : 100;
     this.alive = true;
     this.currentAngle = 0;
   }
@@ -66,7 +66,7 @@ class PlayScene extends Phaser.Scene {
 
     this.socket = io({
       reconnectionAttempts: 5,
-      query: { username: window.PLAYER_NAME },
+      query: { username: window.PLAYER_NAME, tank_class: window.TANK_CLASS || 'assault' },
       transports: ['websocket']
     });
 
@@ -237,7 +237,6 @@ class PlayScene extends Phaser.Scene {
       this.addItem(data.item_id, data.data);
     });
 
-    // All visuals sync AFTER physics — no jitter
     this.events.on('postupdate', () => {
       if (!this.tank) return;
       if (this.alive) {
@@ -369,9 +368,12 @@ class PlayScene extends Phaser.Scene {
   }
 
   spawnBullet(x, y, angle, shooterId) {
+    // Use class bullet speed for local player, default 400 for remote
+    const bSpeed = (shooterId === this.myId && window.CLASS_STATS)
+      ? window.CLASS_STATS.bullet_speed : 400;
     const bullet = this.bullets.create(x, y, 'bullet');
     bullet.setCircle(4);
-    bullet.setVelocity(Math.cos(angle) * 400, Math.sin(angle) * 400);
+    bullet.setVelocity(Math.cos(angle) * bSpeed, Math.sin(angle) * bSpeed);
     bullet.setData('shooter', shooterId);
     this.time.delayedCall(1500, () => { if (bullet.active) bullet.destroy(); });
   }
@@ -380,6 +382,7 @@ class PlayScene extends Phaser.Scene {
     this.bullets.getChildren().forEach(bullet => {
       if (!bullet.active) return;
       const shooter = bullet.getData('shooter');
+      // Local player's bullet hitting a remote player
       if (shooter === this.myId) {
         for (const [pid, remote] of Object.entries(this.otherPlayers)) {
           if (!remote.alive) continue;
@@ -393,7 +396,9 @@ class PlayScene extends Phaser.Scene {
       }
       if (shooter && shooter !== this.myId && this.alive && this.tank) {
         const dist = Phaser.Math.Distance.Between(bullet.x, bullet.y, this.tank.x, this.tank.y);
-        if (dist < 22) bullet.destroy();
+        if (dist < 22) {
+          bullet.destroy();
+        }
       }
     });
   }
@@ -437,7 +442,8 @@ class PlayScene extends Phaser.Scene {
     this.interpolateRemotePlayers();
 
     if (this.alive) {
-      const spd = 180;
+      // Use class-specific speed
+      const spd = window.CLASS_STATS ? window.CLASS_STATS.speed : 180;
       let vx = 0, vy = 0;
       if (this.keys.a.isDown) vx = -spd;
       if (this.keys.d.isDown) vx = spd;
@@ -456,7 +462,9 @@ class PlayScene extends Phaser.Scene {
         this.socket.emit('move', { x: this.tank.x, y: this.tank.y, angle: this.currentAngle });
       }
 
-      if (this.pointerReady && ptr.isDown && time > this.lastShot + 250) {
+      // Use class-specific fire rate
+      const fireRate = window.CLASS_STATS ? window.CLASS_STATS.fire_rate : 250;
+      if (this.pointerReady && ptr.isDown && time > this.lastShot + fireRate) {
         this.lastShot = time;
         const barrelTip = 28 * this.barrel.scaleX + 4;
         const bx = this.tank.x + Math.cos(this.currentAngle) * 30;
