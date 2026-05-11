@@ -27,22 +27,56 @@ START_HP = 100
 START_MAX_HP = 100
 BULLET_DAMAGE = 25
 
+# Class stats - each class has its own balance
+CLASS_STATS = {
+    'scout': {
+        'hp': 70,
+        'max_hp': 70,
+        'speed': 250,
+        'bullet_damage': 20,
+        'fire_rate': 200,
+        'bullet_speed': 400,
+    },
+    'assault': {
+        'hp': 100,
+        'max_hp': 100,
+        'speed': 180,
+        'bullet_damage': 25,
+        'fire_rate': 250,
+        'bullet_speed': 550,
+    },
+    'support': {
+        'hp': 150,
+        'max_hp': 150,
+        'speed': 140,
+        'bullet_damage': 30,
+        'fire_rate': 350,
+        'bullet_speed': 400,
+    },
+    'medic': {
+        'hp': 120,
+        'max_hp': 120,
+        'speed': 160,
+        'bullet_damage': 15,
+        'fire_rate': 400,
+        'bullet_speed': 350,
+    },
+}
+
 def adjust_max_hp(sid, reason, **kwargs):
-    
-    p =players.get(sid)
+    p = players.get(sid)
     if not p:
         return
     if reason == 'powerup':
         p['max_hp'] = 300
-        p['hp'] = min(p['hp']+ 200, p['max_hp'])
-
-
+        p['hp'] = min(p['hp'] + 200, p['max_hp'])
 
     socketio.emit('hp_update', {
         'id': sid,
         'hp': p['hp'],
         'max_hp': p['max_hp'],
     })
+
 def spawn_item():
     global item_counter
     item_counter += 1
@@ -63,7 +97,7 @@ for _ in range(3):
 @app.route('/')
 def index():
     if 'username' in session:
-        return redirect(url_for('game'))
+        return redirect(url_for('homePage'))
     return redirect(url_for('login'))
 
 
@@ -117,11 +151,33 @@ def homePage():
         return redirect(url_for('login'))
     return render_template('homePage.html', username=session['username'])
 
+# Class selection screen
+@app.route('/class-select')
+def classSelect():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('classSelect.html', username=session['username'])
+
+# Placeholder for achievements 
+@app.route('/achievements')
+def achievements():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return redirect(url_for('homePage'))
+
 @app.route('/game')
 def game():
     if 'username' not in session:
         return redirect(url_for('login'))
-    return render_template('game.html', username=session['username'])
+    tank_class = request.args.get('tank_class', 'assault')
+    if tank_class not in CLASS_STATS:
+        tank_class = 'assault'
+    class_stats = CLASS_STATS[tank_class]
+    return render_template('game.html',
+        username=session['username'],
+        tank_class=tank_class,
+        class_stats=class_stats,
+    )
 
 
 # =============================================
@@ -129,7 +185,7 @@ def game():
 # =============================================
 @socketio.on('connect')
 def on_connect():
-    username = request.args.get('username',session.get('username','Guest'))
+    username = request.args.get('username', session.get('username', 'Guest'))
     players[request.sid] = {
         'x': random.randint(100, 1900),
         'y': random.randint(100, 1900),
