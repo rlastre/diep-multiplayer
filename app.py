@@ -41,7 +41,7 @@ CLASS_STATS = {
         'hp': 100,
         'max_hp': 100,
         'speed': 180,
-        'bullet_damage': 25,
+        'bullet_damage': 10,
         'fire_rate': 250,
         'bullet_speed': 550,
     },
