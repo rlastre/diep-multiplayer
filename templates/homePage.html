@@ -1,27 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <title>Tank Arena</title>
-
     <style>
         body {
             height: 100vh;
-            font-family: 'Ubuntu', san-serif;
-
-            background-image: url("{{url_for ('static', filename = 'tankArena1.png')}}");
+            margin: 0;
+            padding: 0;
+            font-family: 'Ubuntu', sans-serif;
+            background-image: url("{{ url_for('static', filename='tankArena1.png') }}");
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
             background-attachment: fixed;
-        }
-
-        .parentContainer {
-            position: fixed;
-            bottom: 80px;
-            width: 100%;
-            display: flex;
-            justify-content: center;
         }
 
         .title {
@@ -32,16 +23,35 @@
             margin-top: 30px;
         }
 
+        .welcome {
+            text-align: center;
+            color: slategray;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
         .logout {
             top: 20px;
             left: 20px;
             position: fixed;
         }
-
-        .logout button{
+        .logout button {
             font-size: 16px;
             background-color: lightcoral;
             color: slategrey;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+
+        .parentContainer {
+            position: fixed;
+            bottom: 80px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
         }
 
         .playGame button {
@@ -49,26 +59,61 @@
             height: 50px;
             background-color: lightgreen;
             color: slategrey;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+
+        
+        .skinsBtn button {
+            width: 250px;
+            height: 50px;
+            background-color: lightskyblue;
+            color: slategrey;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
         }
 
     </style>
 </head>
-
 <body>
-    <div style = "text-align: center;">
-        <div class = "title"> 
-                    <h1> Tank Arena </h1>
+
+    <div style="text-align: center;">
+
+        <div class="title">
+            <h1>Tank Arena</h1>
         </div>
 
-        <div class = "parentContainer">
-            <div class = "playGame"> 
-                    <a href = "{{url_for ('game')}}"> <button> Play Game </button></a>
+        <p class="welcome">Welcome, {{ username }}</p>
+
+        <div class="parentContainer">
+
+            <div class="playGame">
+                <a href="{{ url_for('game') }}">
+                    <button>Play Game</button>
+                </a>
             </div>
+
+            <div class="skinsBtn">
+                <a href="{{ url_for('achievements') }}">
+                    <button>Skins & Achievements</button>
+                </a>
+            </div>
+
+
         </div>
 
-        <div class = "logout"> 
-            <a href = "{{url_for ('logout')}}"><button> Logout </button></a>
+        
+        <div class="logout">
+            <a href="{{ url_for('logout') }}">
+                <button>Logout</button>
+            </a>
         </div>
+
     </div>
+
 </body>
 </html>
