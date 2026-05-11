@@ -159,13 +159,6 @@ def classSelect():
         return redirect(url_for('login'))
     return render_template('classSelect.html', username=session['username'])
 
-# Placeholder for achievements 
-@app.route('/achievements')
-def achievements():
-    if 'username' not in session:
-        return redirect(url_for('login'))
-    return redirect(url_for('homePage'))
-
 @app.route('/game')
 def game():
     if 'username' not in session:
@@ -179,31 +172,6 @@ def game():
         tank_class=tank_class,
         class_stats=class_stats,
     )
-
-@app.route('/customize')
-def customize():
-    if 'username' not in session: 
-        return redirect(url_for('login'))
-    
-    user_data = users_collection.find_one({'username': session['username']})
-    
-    return render_template('customize.html', 
-                           kills=user_data.get('kills', 0), 
-                           current_skin=user_data.get('equipped_skin', '#708090'))
-
-@app.route('/equip_skin', methods=['POST'])
-def equip_skin():
-    if 'username' not in session:
-        return 'Unauthorized', 401
-    
-    new_hex = request.form.get('color_hex')
-    if new_hex:
-        users_collection.update_one(
-            {'username': session['username']},
-            {'$set': {'equipped_skin': new_hex}}
-        )
-        return '', 204
-    return 'Invalid data', 400
 
 @app.route('/customize')
 def customize():
