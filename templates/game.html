@@ -16,7 +16,29 @@
     font-family: 'Courier New', monospace; cursor: pointer; z-index: 999;
   }
 	#chat-box {
-		position: fixed; bottom: 5%; left: 15%;
+		position: fixed; bottom: 5%; left: 15%; max-width: 30%;
+		font-family: 'Courier New', monospace; overflow-wrap: break-word;
+	}
+	#chat-box input {
+		font-family: 'Courier New', monospace;
+	}
+	#chat-box button {
+		min-width: 2em;
+	}
+	#chat-log {
+		pointer-events: none;
+	}
+	.text-message {
+		background: rgba(210, 210, 210, 0.3);
+	}
+	#chat-visibility {
+		visibility: visible;
+	}
+	.visibility-hidden {
+		visibility: hidden;
+	}
+	.chat-input-container {
+		display: flex; align-items: center;
 	}
 </style>
 </head>
@@ -25,9 +47,10 @@
 <div id="chat-box">
 	<div id="chat-log">
 	</div>
-	<span>
-		<input id="message-input" type="text" maxlength="30" />
-		<button id="message-send">Send</button>
+	<span id="chat-input-container">
+		<button id="chat-visibility">👁&#xFE0E;</button>
+		<input id="message-input" type="text" maxlength="40" />
+		<button id="message-send">⏎</button>
 	</span>
 </div>
 <script>window.PLAYER_NAME = "{{ username }}";</script>

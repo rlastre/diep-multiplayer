@@ -70,17 +70,43 @@ class PlayScene extends Phaser.Scene {
       transports: ['websocket']
     });
 
+		// Chatbox logic here to ensure socket properly loaded
 		document.getElementById('message-send').addEventListener('click', (event) => {
 			const messageInput = document.getElementById('message-input');
 			const messageValue = messageInput.value;
+			messageInput.blur(); // Lose focus regardless of success
+			if (!messageValue) { return; }
 			messageInput.value = '';
-			this.socket.emit('text_message_send', messageValue);
+			this.socket.emit('text_message_send', {
+				username: window.PLAYER_NAME,
+				color: this.myColor,
+				message: messageValue
+			});
+		});
+
+		document.getElementById('message-input').addEventListener('keydown', (event) => {
+			if (event.key === 'Enter') document.getElementById('message-send').click();
+		});
+
+		document.getElementById('chat-visibility').addEventListener('click', (event) => {
+			document.getElementById('chat-box').classList.toggle('visibility-hidden');
 		});
 
 		this.socket.on('text_message_receive', (data) => {
 			const message = document.createElement('div');
-			message.innerText = JSON.stringify(data);
-			document.getElementById('chat-log').append(message);
+			message.classList.add('text-message');
+			const messageSender = document.createElement('b');
+			messageSender.innerText = data.username + ':';
+			messageSender.style['color'] = data.color;
+			const messageContent = document.createElement('span');
+			messageContent.innerText = data.message;
+			message.appendChild(messageSender);
+			message.appendChild(messageContent);
+			const chatLog = document.getElementById('chat-log');
+			chatLog.append(message);
+			if (chatLog.children.length > 5) {
+				chatLog.removeChild(chatLog.children[0]);
+			}
 		});
 
     this.socket.on('init', (data) => {
