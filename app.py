@@ -30,7 +30,7 @@ BULLET_DAMAGE = 100
 # Class stats - each class has its own balance
 CLASS_STATS = {
     'scout': {
-        'hp': 110,
+        'hp': 70,
         'max_hp': 70,
         'speed': 100,
         'bullet_damage': 45,
@@ -231,54 +231,6 @@ def on_shoot(data):
         emit('player_shot', {'id': request.sid, 'data': data}, broadcast=True, include_self=False)
 
 
-@socketio.on('got_hit')
-def on_got_hit(data):
-    shooter_id = data.get('shooter_id')
-    victim_id = request.sid
-    if victim_id not in players or not players[victim_id]['alive']:
-        return
-    if shooter_id not in players:
-        return
-
-    attacker = players[shooter_id]
-    damage = attacker.get('bullet_damage', BULLET_DAMAGE)
-    players[victim_id]['hp'] -= damage
-
-    if players[victim_id]['hp'] <= 0:
-        players[victim_id]['hp'] = 0
-        players[victim_id]['alive'] = False
-        killer_name = attacker.get('username', '?')
-        victim_name = players[victim_id].get('username', '?')
-
-        users_collection.update_one(
-            {'username': killer_name},
-            {'$inc': {'kills': 1}}
-        )
-
-        socketio.emit('player_died', {
-            'id': victim_id,
-            'killer_id': shooter_id,
-            'killer_name': killer_name,
-            'victim_name': victim_name,
-        })
-
-        def make_respawn(tid):
-            def do_respawn():
-                socketio.sleep(3)
-                if tid in players:
-                    p_class = players[tid].get('tank_class', 'assault')
-                    p_stats = CLASS_STATS.get(p_class, CLASS_STATS['assault'])
-                    players[tid]['hp'] = p_stats['hp']
-                    players[tid]['max_hp'] = p_stats['max_hp']
-                    players[tid]['alive'] = True
-                    players[tid]['x'] = random.randint(100, 1900)
-                    players[tid]['y'] = random.randint(100, 1900)
-                    players[tid]['scale'] = 1
-                    socketio.emit('player_respawned', {'id': tid, 'data': players[tid]})
-            return do_respawn
-        socketio.start_background_task(make_respawn(victim_id))
-    else:
-        socketio.emit('player_damaged', {'id': victim_id, 'hp': players[victim_id]['hp']})
 
 @socketio.on('hit')
 def on_hit(data):
@@ -290,6 +242,7 @@ def on_hit(data):
     attacker = players.get(request.sid, {})
     damage = attacker.get('bullet_damage', BULLET_DAMAGE)
     players[target_id]['hp'] -= damage
+    print(f'[HIT] {attacker.get("username","?")} ({attacker.get("tank_class","?")}) dealt {damage} dmg to {players[target_id].get("username","?")} — HP: {players[target_id]["hp"]}/{players[target_id]["max_hp"]}')
 
     if players[target_id]['hp'] <= 0:
         players[target_id]['hp'] = 0

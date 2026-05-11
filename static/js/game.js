@@ -355,12 +355,12 @@ class PlayScene extends Phaser.Scene {
           }
         }
       }
-      // Remote player's bullet hitting local player — report it to server
+      // Remote player's bullet hitting local player — destroy visually only
+      // (the shooter's client reports the hit via 'hit' event)
       if (shooter && shooter !== this.myId && this.alive && this.tank) {
         const dist = Phaser.Math.Distance.Between(bullet.x, bullet.y, this.tank.x, this.tank.y);
         if (dist < 22) {
           bullet.destroy();
-          this.socket.emit('got_hit', { shooter_id: shooter });
         }
       }
     });
