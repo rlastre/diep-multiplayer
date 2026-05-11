@@ -6,8 +6,8 @@ class PlayScene extends Phaser.Scene {
     this.itemSprites = {};
     this.myId = null;
     this.myColor = '#4488cc';
-    this.myHp = 100;
-    this.myMaxHp = 100;
+    this.myHp = window.CLASS_STATS ? window.CLASS_STATS.hp : 100;
+    this.myMaxHp = window.CLASS_STATS ? window.CLASS_STATS.max_hp : 100;
     this.alive = true;
     this.currentAngle = 0;
   }
@@ -29,6 +29,209 @@ class PlayScene extends Phaser.Scene {
   create() {
     this.cameras.main.setBackgroundColor('#e8e4d8');
     this.physics.world.setBounds(0, 0, 2000, 2000);
+
+    const wallColor = this.make.graphics({add: false});
+    wallColor.fillStyle(0x555555, 1);
+    wallColor.fillRect(0, 0, 40, 40);
+    wallColor.generateTexture('wall', 40, 40);
+    wallColor.destroy();
+
+    this.wall = this.physics.add.staticGroup();
+    // Wall - Top Left
+    this.wall.create(0, 200, 'wall').refreshBody();
+    this.wall.create(40, 200, 'wall').refreshBody();
+    this.wall.create(80, 200, 'wall').refreshBody();
+    this.wall.create(120, 200, 'wall').refreshBody();
+    this.wall.create(160, 200, 'wall').refreshBody();
+    this.wall.create(280, 200, 'wall').refreshBody();
+    this.wall.create(320, 200, 'wall').refreshBody();
+    this.wall.create(360, 200, 'wall').refreshBody();
+    this.wall.create(400, 200, 'wall').refreshBody();
+    this.wall.create(440, 200, 'wall').refreshBody();
+    this.wall.create(480, 200, 'wall').refreshBody();
+    this.wall.create(520, 200, 'wall').refreshBody();
+    this.wall.create(560, 200, 'wall').refreshBody();
+    this.wall.create(600, 200, 'wall').refreshBody();
+
+    // Wall - Top Left left side
+    this.wall.create(160, 240, 'wall').refreshBody();
+    this.wall.create(160, 280, 'wall').refreshBody();
+    this.wall.create(160, 320, 'wall').refreshBody();
+    this.wall.create(160, 360, 'wall').refreshBody();
+    this.wall.create(160, 400, 'wall').refreshBody();
+
+    this.wall.create(160, 520, 'wall').refreshBody();
+    this.wall.create(160, 560, 'wall').refreshBody();
+    this.wall.create(160, 600, 'wall').refreshBody();
+    this.wall.create(160, 640, 'wall').refreshBody();
+    this.wall.create(160, 680, 'wall').refreshBody();
+
+    this.wall.create(0, 680, 'wall').refreshBody();
+    this.wall.create(40, 680, 'wall').refreshBody();
+    this.wall.create(80, 680, 'wall').refreshBody();
+    this.wall.create(120, 680, 'wall').refreshBody();
+    this.wall.create(160, 680, 'wall').refreshBody();
+
+    // Wall - Top Left right side
+    this.wall.create(280, 240, 'wall').refreshBody();
+    this.wall.create(280, 280, 'wall').refreshBody();
+    this.wall.create(280, 320, 'wall').refreshBody();
+    this.wall.create(280, 360, 'wall').refreshBody();
+    this.wall.create(280, 400, 'wall').refreshBody();
+
+    this.wall.create(280, 520, 'wall').refreshBody();
+    this.wall.create(280, 560, 'wall').refreshBody();
+    this.wall.create(280, 600, 'wall').refreshBody();
+    this.wall.create(280, 640, 'wall').refreshBody();
+    this.wall.create(280, 680, 'wall').refreshBody();
+
+    this.wall.create(280, 840, 'wall').refreshBody();
+    this.wall.create(280, 880, 'wall').refreshBody();
+    this.wall.create(280, 920, 'wall').refreshBody();
+    this.wall.create(280, 960, 'wall').refreshBody();
+    this.wall.create(280, 1000, 'wall').refreshBody();
+    this.wall.create(280, 1040, 'wall').refreshBody();
+    this.wall.create(280, 1080, 'wall').refreshBody();
+    this.wall.create(280, 1120, 'wall').refreshBody();
+    this.wall.create(280, 1160, 'wall').refreshBody();
+    this.wall.create(280, 1200, 'wall').refreshBody();
+
+    this.wall.create(0, 1200, 'wall').refreshBody();
+    this.wall.create(120, 1200, 'wall').refreshBody();
+    this.wall.create(160, 1200, 'wall').refreshBody();
+    this.wall.create(200, 1200, 'wall').refreshBody();
+    this.wall.create(240, 1200, 'wall').refreshBody();
+    this.wall.create(280, 1200, 'wall').refreshBody();
+
+    //Wall - Bottom Left
+    this.wall.create(320, 1200, 'wall').refreshBody();
+    this.wall.create(360, 1200, 'wall').refreshBody();
+    this.wall.create(400, 1200, 'wall').refreshBody();
+    this.wall.create(440, 1200, 'wall').refreshBody();
+    this.wall.create(480, 1200, 'wall').refreshBody();
+    this.wall.create(520, 1200, 'wall').refreshBody();
+    this.wall.create(560, 1200, 'wall').refreshBody();
+    this.wall.create(680, 1200, 'wall').refreshBody();
+    this.wall.create(720, 1200, 'wall').refreshBody();
+    this.wall.create(760, 1200, 'wall').refreshBody();
+    this.wall.create(800, 1200, 'wall').refreshBody();
+    this.wall.create(840, 1200, 'wall').refreshBody();
+    this.wall.create(880, 1200, 'wall').refreshBody();
+
+    this.wall.create(880, 1240, 'wall').refreshBody();
+    this.wall.create(880, 1280, 'wall').refreshBody();
+    this.wall.create(880, 1320, 'wall').refreshBody();
+    this.wall.create(880, 1440, 'wall').refreshBody();
+    this.wall.create(880, 1480, 'wall').refreshBody();
+    this.wall.create(880, 1520, 'wall').refreshBody();
+    this.wall.create(880, 1560, 'wall').refreshBody();
+    this.wall.create(880, 1600, 'wall').refreshBody();
+    this.wall.create(880, 1640, 'wall').refreshBody();
+    this.wall.create(880, 1680, 'wall').refreshBody();
+    this.wall.create(880, 1840, 'wall').refreshBody();
+    this.wall.create(880, 1880, 'wall').refreshBody();
+    this.wall.create(880, 1920, 'wall').refreshBody();
+    this.wall.create(880, 1960, 'wall').refreshBody();
+    this.wall.create(880, 2000, 'wall').refreshBody();
+
+    //Wall - Bottom    
+    this.wall.create(1000, 1200, 'wall').refreshBody();
+    this.wall.create(1040, 1200, 'wall').refreshBody();
+    this.wall.create(1080, 1200, 'wall').refreshBody();
+    this.wall.create(1120, 1200, 'wall').refreshBody();
+    this.wall.create(1160, 1200, 'wall').refreshBody();
+    this.wall.create(1200, 1200, 'wall').refreshBody();
+    this.wall.create(1240, 1200, 'wall').refreshBody();
+    this.wall.create(1280, 1200, 'wall').refreshBody();
+    this.wall.create(1320, 1200, 'wall').refreshBody();
+    this.wall.create(1360, 1200, 'wall').refreshBody();
+    this.wall.create(1400, 1200, 'wall').refreshBody();
+    this.wall.create(1440, 1200, 'wall').refreshBody();
+    this.wall.create(1480, 1200, 'wall').refreshBody();
+
+    this.wall.create(1480, 1240, 'wall').refreshBody();
+    this.wall.create(1480, 1360, 'wall').refreshBody();
+    this.wall.create(1480, 1400, 'wall').refreshBody();
+    this.wall.create(1480, 1440, 'wall').refreshBody();
+    this.wall.create(1480, 1480, 'wall').refreshBody();
+    this.wall.create(1480, 1600, 'wall').refreshBody();
+    this.wall.create(1480, 1640, 'wall').refreshBody();
+    this.wall.create(1480, 1680, 'wall').refreshBody();
+    this.wall.create(1480, 1720, 'wall').refreshBody();
+    this.wall.create(1480, 1760, 'wall').refreshBody(); 
+    this.wall.create(1480, 1800, 'wall').refreshBody();
+    this.wall.create(1480, 1840, 'wall').refreshBody();
+    this.wall.create(1480, 1880, 'wall').refreshBody();
+    this.wall.create(1480, 1920, 'wall').refreshBody();
+    this.wall.create(1480, 1960, 'wall').refreshBody();
+    this.wall.create(1480, 2000, 'wall').refreshBody();
+
+    // Wall - Right Side
+    this.wall.create(1720, 1680, 'wall').refreshBody();
+    this.wall.create(1760, 1680, 'wall').refreshBody();
+    this.wall.create(1800, 1680, 'wall').refreshBody();
+    this.wall.create(1840, 1680, 'wall').refreshBody();
+
+    this.wall.create(1720, 1480, 'wall').refreshBody();
+    this.wall.create(1760, 1480, 'wall').refreshBody();
+    this.wall.create(1800, 1480, 'wall').refreshBody();
+    this.wall.create(1840, 1480, 'wall').refreshBody();
+
+    this.wall.create(1720, 1280, 'wall').refreshBody();
+    this.wall.create(1760, 1280, 'wall').refreshBody();
+    this.wall.create(1800, 1280, 'wall').refreshBody();
+    this.wall.create(1840, 1280, 'wall').refreshBody();
+
+    this.wall.create(1720, 1000, 'wall').refreshBody();
+    this.wall.create(1760, 1000, 'wall').refreshBody();
+    this.wall.create(1800, 1000, 'wall').refreshBody();
+    this.wall.create(1840, 1000, 'wall').refreshBody();
+
+    // Wall - Right Side
+    this.wall.create(1480, 1240, 'wall').refreshBody();
+    this.wall.create(1480, 1200, 'wall').refreshBody();
+    this.wall.create(1480, 1160, 'wall').refreshBody();
+    this.wall.create(1480, 1120, 'wall').refreshBody();
+
+    this.wall.create(1480, 920, 'wall').refreshBody();
+    this.wall.create(1480, 880, 'wall').refreshBody();
+    this.wall.create(1480, 840,'wall').refreshBody();
+    this.wall.create(1480, 800, 'wall').refreshBody();
+    this.wall.create(1480, 600, 'wall').refreshBody();
+    this.wall.create(1480, 560, 'wall').refreshBody();
+    this.wall.create(1480, 520, 'wall').refreshBody();
+    this.wall.create(1480, 360, 'wall').refreshBody();
+    this.wall.create(1480, 320, 'wall').refreshBody();
+    this.wall.create(1480, 280, 'wall').refreshBody();
+    this.wall.create(1480, 240, 'wall').refreshBody();
+    this.wall.create(1480, 200, 'wall').refreshBody();
+
+  // Wall - Top
+  this.wall.create(1480, 200, 'wall').refreshBody();
+  this.wall.create(1440, 200, 'wall').refreshBody();
+  this.wall.create(1400, 200, 'wall').refreshBody();
+  this.wall.create(1360, 200, 'wall').refreshBody();
+  this.wall.create(1320, 200, 'wall').refreshBody();
+  this.wall.create(1280, 200, 'wall').refreshBody();
+
+  this.wall.create(1080, 200, 'wall').refreshBody();
+  this.wall.create(1040, 200, 'wall').refreshBody();
+  this.wall.create(1000, 200, 'wall').refreshBody();
+  this.wall.create(960, 200, 'wall').refreshBody();
+  this.wall.create(920, 200, 'wall').refreshBody();
+
+  this.wall.create(720, 200, 'wall').refreshBody();
+  this.wall.create(680, 200, 'wall').refreshBody();
+  this.wall.create(640, 200, 'wall').refreshBody();
+  this.wall.create(600, 200, 'wall').refreshBody();
+  this.wall.create(560, 200, 'wall').refreshBody();
+
+  this.wall.create(360, 200, 'wall').refreshBody();
+  this.wall.create(320, 200, 'wall').refreshBody();
+  this.wall.create(280, 200, 'wall').refreshBody();
+
+  this.wall.create(160, 200, 'wall').refreshBody();
+
     this.cameras.main.setBounds(0, 0, 2000, 2000);
     this.cameras.main.setRoundPixels(false);
 
@@ -40,12 +243,17 @@ class PlayScene extends Phaser.Scene {
     this.bullets = this.physics.add.group();
     this.hpGraphics = this.add.graphics().setDepth(50);
 
+    this.physics.add.collider(this.bullets, this.wall, (bullet) => {
+        bullet.destroy();
+    })
+
     this.keys = this.input.keyboard.addKeys({
       w: Phaser.Input.Keyboard.KeyCodes.W,
       a: Phaser.Input.Keyboard.KeyCodes.A,
       s: Phaser.Input.Keyboard.KeyCodes.S,
       d: Phaser.Input.Keyboard.KeyCodes.D,
     });
+		this.input.keyboard.removeCapture('W,A,S,D'); // Allow chatbox to receive these events
     this.lastShot = 0;
     this.pointerReady = false;
     this.input.on('pointermove', () => { this.pointerReady = true; });
@@ -65,9 +273,48 @@ class PlayScene extends Phaser.Scene {
 
     this.socket = io({
       reconnectionAttempts: 5,
-      query: { username: window.PLAYER_NAME },
+      query: { username: window.PLAYER_NAME, tank_class: window.TANK_CLASS || 'assault' },
       transports: ['websocket']
     });
+
+		// Chatbox logic here to ensure socket properly loaded
+		document.getElementById('message-send').addEventListener('click', (event) => {
+			const messageInput = document.getElementById('message-input');
+			const messageValue = messageInput.value;
+			messageInput.blur(); // Lose focus regardless of success
+			if (!messageValue) { return; }
+			messageInput.value = '';
+			this.socket.emit('text_message_send', {
+				username: window.PLAYER_NAME,
+				color: this.myColor,
+				message: messageValue
+			});
+		});
+
+		document.getElementById('message-input').addEventListener('keydown', (event) => {
+			if (event.key === 'Enter') document.getElementById('message-send').click();
+		});
+
+		document.getElementById('chat-visibility').addEventListener('click', (event) => {
+			document.getElementById('chat-box').classList.toggle('visibility-hidden');
+		});
+
+		this.socket.on('text_message_receive', (data) => {
+			const message = document.createElement('div');
+			message.classList.add('text-message');
+			const messageSender = document.createElement('b');
+			messageSender.innerText = data.username + ':';
+			messageSender.style['color'] = data.color;
+			const messageContent = document.createElement('span');
+			messageContent.innerText = data.message;
+			message.appendChild(messageSender);
+			message.appendChild(messageContent);
+			const chatLog = document.getElementById('chat-log');
+			chatLog.append(message);
+			if (chatLog.children.length > 5) {
+				chatLog.removeChild(chatLog.children[0]);
+			}
+		});
 
     this.socket.on('init', (data) => {
       this.myId = data.id;
@@ -185,11 +432,14 @@ class PlayScene extends Phaser.Scene {
     this.socket.on('item_picked', (data) => {
       this.removeItem(data.item_id);
       if (data.player_id === this.myId) {
-        this.tank.setScale(3);
-        this.barrel.setScale(3);
+				const newScale = Math.min(2.4, this.tank.scale + 0.2 / this.tank.scale);
+        this.tank.setScale(newScale);
+        this.barrel.setScale(newScale);
       } else if (this.otherPlayers[data.player_id]) {
-        this.otherPlayers[data.player_id].tank.setScale(3);
-        this.otherPlayers[data.player_id].barrel.setScale(3);
+				const r = this.otherPlayers[data.player_id];
+				const newScale = Math.min(2.4, r.tank.scale + 0.2 / r.tank.scale);
+        r.tank.setScale(newScale);
+        r.barrel.setScale(newScale);
       }
     });
 
@@ -197,7 +447,6 @@ class PlayScene extends Phaser.Scene {
       this.addItem(data.item_id, data.data);
     });
 
-    // All visuals sync AFTER physics — no jitter
     this.events.on('postupdate', () => {
       if (!this.tank) return;
       if (this.alive) {
@@ -257,6 +506,7 @@ class PlayScene extends Phaser.Scene {
     bg.generateTexture('barrel_local', 28, 8);
 
     this.tank = this.physics.add.image(x, y, 'tank_local');
+    this.physics.add.collider(this.tank, this.wall);
     this.tank.setCollideWorldBounds(true);
     this.tank.setDepth(1);
 
@@ -329,9 +579,12 @@ class PlayScene extends Phaser.Scene {
   }
 
   spawnBullet(x, y, angle, shooterId) {
+    // Use class bullet speed for local player, default 400 for remote
+    const bSpeed = (shooterId === this.myId && window.CLASS_STATS)
+      ? window.CLASS_STATS.bullet_speed : 400;
     const bullet = this.bullets.create(x, y, 'bullet');
     bullet.setCircle(4);
-    bullet.setVelocity(Math.cos(angle) * 400, Math.sin(angle) * 400);
+    bullet.setVelocity(Math.cos(angle) * bSpeed, Math.sin(angle) * bSpeed);
     bullet.setData('shooter', shooterId);
     this.time.delayedCall(1500, () => { if (bullet.active) bullet.destroy(); });
   }
@@ -340,11 +593,12 @@ class PlayScene extends Phaser.Scene {
     this.bullets.getChildren().forEach(bullet => {
       if (!bullet.active) return;
       const shooter = bullet.getData('shooter');
+      // Local player's bullet hitting a remote player
       if (shooter === this.myId) {
         for (const [pid, remote] of Object.entries(this.otherPlayers)) {
           if (!remote.alive) continue;
-          const dist = Phaser.Math.Distance.Between(bullet.x, bullet.y, remote.tank.x, remote.tank.y);
-          if (dist < 22) {
+					const dist = Math.max(Math.abs(bullet.x - remote.tank.x), Math.abs(bullet.y - remote.tank.y));
+          if (dist < 16 * remote.tank.scale) {
             bullet.destroy();
             this.socket.emit('hit', { target_id: pid });
             return;
@@ -352,8 +606,10 @@ class PlayScene extends Phaser.Scene {
         }
       }
       if (shooter && shooter !== this.myId && this.alive && this.tank) {
-        const dist = Phaser.Math.Distance.Between(bullet.x, bullet.y, this.tank.x, this.tank.y);
-        if (dist < 22) bullet.destroy();
+				const dist = Math.max(Math.abs(bullet.x - this.tank.x), Math.abs(bullet.y - this.tank.y));
+        if (dist < 16 * this.tank.scale) {
+          bullet.destroy();
+        }
       }
     });
   }
@@ -397,7 +653,8 @@ class PlayScene extends Phaser.Scene {
     this.interpolateRemotePlayers();
 
     if (this.alive) {
-      const spd = 180;
+      // Use class-specific speed
+      const spd = window.CLASS_STATS ? window.CLASS_STATS.speed : 180;
       let vx = 0, vy = 0;
       if (this.keys.a.isDown) vx = -spd;
       if (this.keys.d.isDown) vx = spd;
@@ -416,7 +673,9 @@ class PlayScene extends Phaser.Scene {
         this.socket.emit('move', { x: this.tank.x, y: this.tank.y, angle: this.currentAngle });
       }
 
-      if (this.pointerReady && ptr.isDown && time > this.lastShot + 250) {
+      // Use class-specific fire rate
+      const fireRate = window.CLASS_STATS ? window.CLASS_STATS.fire_rate : 250;
+      if (this.pointerReady && ptr.isDown && time > this.lastShot + fireRate) {
         this.lastShot = time;
         const barrelTip = 28 * this.barrel.scaleX + 4;
         const bx = this.tank.x + Math.cos(this.currentAngle) * 30;

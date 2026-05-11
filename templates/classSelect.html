@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Class — Tank Arena</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            height: 100vh;
+            font-family: 'Ubuntu', sans-serif;
+            background: #000;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 40px;
+        }
+
+        .back-link {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .back-link:hover { text-decoration: underline; }
+
+        .class-grid {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .class-card {
+            width: 200px;
+            border: 2px solid #333;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: #fff;
+            transition: border-color 0.2s, transform 0.15s;
+            display: block;
+        }
+        .class-card:hover {
+            border-color: #fff;
+            transform: translateY(-4px);
+        }
+
+        .class-card img {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            margin-bottom: 16px;
+        }
+
+        .class-card .class-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .class-card .class-desc {
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="{{ url_for('homePage') }}" class="back-link">← Back to Menu</a>
+
+    <div class="page-title">Select Your Class</div>
+
+    <div class="class-grid">
+
+        <!-- Assault -->
+        <a href="{{ url_for('game', tank_class='assault') }}" class="class-card">
+            <img src="{{ url_for('static', filename='assault_icon.png') }}" alt="Assault">
+            <div class="class-name">Assault</div>
+            <div class="class-desc">Balanced fighter. Standard HP, speed, and firepower.</div>
+        </a>
+
+        <a href="{{ url_for('game', tank_class='medic') }}" class="class-card">
+            <img src="{{ url_for('static', filename='medic_icon.png') }}" alt="Medic">
+            <div class="class-name">Medic</div>
+            <div class="class-desc">Extra HP but regular damage and speed.</div>
+        </a>
+
+        <!-- Scout -->
+        <a href="{{ url_for('game', tank_class='scout') }}" class="class-card">
+            <img src="{{ url_for('static', filename='scout.png') }}" alt="Scout">
+            <div class="class-name">Scout</div>
+            <div class="class-desc">High damage output but lower bullet speed and perks</div>
+        </a>
+
+        <!-- Support -->
+        <a href="{{ url_for('game', tank_class='support') }}" class="class-card">
+            <img src="{{ url_for('static', filename='support_class.png') }}" alt="Support">
+            <div class="class-name">Support</div>
+            <div class="class-desc">Tankiest class. High HP, balanced fire rate, slower movement.</div>
+        </a>
+
+    </div>
+
+</body>
+</html>
