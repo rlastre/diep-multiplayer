@@ -36,18 +36,35 @@
 
 <body>
   <button id="logout-btn" onclick="window.location.href='/logout'">Logout</button>
+
+  <!-- Game config stored in data attributes - cleaner approach -->
+  <div id="game-config"
+       data-username="{{ username }}"
+       data-tank-class="{{ tank_class }}"
+       data-hp="{{ class_stats.hp }}"
+       data-max-hp="{{ class_stats.max_hp }}"
+       data-speed="{{ class_stats.speed }}"
+       data-bullet-damage="{{ class_stats.bullet_damage }}"
+       data-fire-rate="{{ class_stats.fire_rate }}"
+       data-bullet-speed="{{ class_stats.bullet_speed }}"
+       style="display:none;"></div>
+
   <script>
-    window.PLAYER_NAME = "{{ username }}";
-    window.TANK_CLASS = "{{ tank_class }}";
+    // Read config from data attributes and set up window globals
+    const cfg = document.getElementById('game-config').dataset;
+    window.PLAYER_NAME = cfg.username;
+    window.TANK_CLASS = cfg.tankClass;
     window.CLASS_STATS = {
-      hp: {{ class_stats.hp }},
-    maxHp: { { class_stats.max_hp } },
-    speed: { { class_stats.speed } },
-    bulletDamage: { { class_stats.bullet_damage } },
-    fireRate: { { class_stats.fire_rate } },
-    bulletSpeed: { { class_stats.bullet_speed } },
-  };
+      hp: parseInt(cfg.hp),
+      max_hp: parseInt(cfg.maxHp),
+      speed: parseInt(cfg.speed),
+      bullet_damage: parseInt(cfg.bulletDamage),
+      fire_rate: parseInt(cfg.fireRate),
+      bullet_speed: parseInt(cfg.bulletSpeed)
+    };
+    console.log('Loaded class:', window.TANK_CLASS, 'with stats:', window.CLASS_STATS);
   </script>
+
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
   <script src="/static/js/game.js"></script>

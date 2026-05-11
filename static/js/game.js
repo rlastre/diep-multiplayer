@@ -7,7 +7,7 @@ class PlayScene extends Phaser.Scene {
     this.myId = null;
     this.myColor = '#4488cc';
     this.myHp = window.CLASS_STATS ? window.CLASS_STATS.hp : 100;
-    this.myMaxHp = window.CLASS_STATS ? window.CLASS_STATS.maxHp : 100;
+    this.myMaxHp = window.CLASS_STATS ? window.CLASS_STATS.max_hp : 100;
     this.alive = true;
     this.currentAngle = 0;
   }
@@ -197,7 +197,6 @@ class PlayScene extends Phaser.Scene {
       this.addItem(data.item_id, data.data);
     });
 
-    // All visuals sync AFTER physics — no jitter
     this.events.on('postupdate', () => {
       if (!this.tank) return;
       if (this.alive) {
@@ -331,7 +330,7 @@ class PlayScene extends Phaser.Scene {
   spawnBullet(x, y, angle, shooterId) {
     // Use class bullet speed for local player, default 400 for remote
     const bSpeed = (shooterId === this.myId && window.CLASS_STATS)
-      ? window.CLASS_STATS.bulletSpeed : 400;
+      ? window.CLASS_STATS.bullet_speed : 400;
     const bullet = this.bullets.create(x, y, 'bullet');
     bullet.setCircle(4);
     bullet.setVelocity(Math.cos(angle) * bSpeed, Math.sin(angle) * bSpeed);
@@ -355,8 +354,6 @@ class PlayScene extends Phaser.Scene {
           }
         }
       }
-      // Remote player's bullet hitting local player — destroy visually only
-      // (the shooter's client reports the hit via 'hit' event)
       if (shooter && shooter !== this.myId && this.alive && this.tank) {
         const dist = Phaser.Math.Distance.Between(bullet.x, bullet.y, this.tank.x, this.tank.y);
         if (dist < 22) {
@@ -426,7 +423,7 @@ class PlayScene extends Phaser.Scene {
       }
 
       // Use class-specific fire rate
-      const fireRate = window.CLASS_STATS ? window.CLASS_STATS.fireRate : 250;
+      const fireRate = window.CLASS_STATS ? window.CLASS_STATS.fire_rate : 250;
       if (this.pointerReady && ptr.isDown && time > this.lastShot + fireRate) {
         this.lastShot = time;
         const barrelTip = 28 * this.barrel.scaleX + 4;

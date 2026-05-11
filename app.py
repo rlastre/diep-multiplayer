@@ -32,7 +32,7 @@ CLASS_STATS = {
     'scout': {
         'hp': 70,
         'max_hp': 70,
-        'speed': 100,
+        'speed': 300,
         'bullet_damage': 45,
         'fire_rate': 10,
         'bullet_speed': 700,
