@@ -287,10 +287,11 @@ def on_pickup(data):
     item_id = data.get('item_id')
     if item_id in items:
         del items[item_id]
+        newScale = min(2.4, players[request.sid]['scale'] + 0.2 / players[request.sid]['scale'])
         if request.sid in players:
-            players[request.sid]['scale'] = 3
+            players[request.sid]['scale'] = newScale
             adjust_max_hp(request.sid, 'powerup')
-        socketio.emit('item_picked', {'item_id': item_id, 'player_id': request.sid, 'scale': 3})
+        socketio.emit('item_picked', {'item_id': item_id, 'player_id': request.sid, 'scale': newScale})
 
         def respawn():
             socketio.sleep(5)
