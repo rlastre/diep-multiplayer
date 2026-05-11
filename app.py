@@ -54,7 +54,7 @@ CLASS_STATS = {
         'bullet_speed': 400,
     },
     'medic': {
-        'hp': 600,
+        'hp': 120,
         'max_hp': 120,
         'speed': 160,
         'bullet_damage': 15,
@@ -186,20 +186,26 @@ def game():
 @socketio.on('connect')
 def on_connect():
     username = request.args.get('username', session.get('username', 'Guest'))
+    tank_class = request.args.get('tank_class', 'assault')
+    if tank_class not in CLASS_STATS:
+        tank_class = 'assault'
+    stats = CLASS_STATS[tank_class]
     players[request.sid] = {
         'x': random.randint(100, 1900),
         'y': random.randint(100, 1900),
         'angle': 0,
         'color': random.choice(COLORS),
         'scale': 1,
-        'hp': START_HP,
-        'max_hp': START_MAX_HP,
+        'hp': stats['hp'],
+        'max_hp': stats['max_hp'],
         'alive': True,
         'username': username,
+        'tank_class': tank_class,
+        'bullet_damage': stats['bullet_damage'],
     }
     emit('init', {'id': request.sid, 'players': players, 'items': items})
     emit('player_joined', {'id': request.sid, 'data': players[request.sid]}, broadcast=True, include_self=False)
-    print(f'[+] {username} connected — {len(players)} players')
+    print(f'[+] {username} ({tank_class}) connected — {len(players)} players')
 
 
 @socketio.on('disconnect')
@@ -231,7 +237,10 @@ def on_hit(data):
     if target_id not in players or not players[target_id]['alive']:
         return
 
-    players[target_id]['hp'] -= BULLET_DAMAGE
+    # Use the attacker's class-specific bullet damage
+    attacker = players.get(request.sid, {})
+    damage = attacker.get('bullet_damage', BULLET_DAMAGE)
+    players[target_id]['hp'] -= damage
 
     if players[target_id]['hp'] <= 0:
         players[target_id]['hp'] = 0
@@ -255,8 +264,11 @@ def on_hit(data):
             def do_respawn():
                 socketio.sleep(3)
                 if tid in players:
-                    players[tid]['hp'] = START_HP
-                    players[tid]['max_hp'] = START_MAX_HP
+                    # Respawn with class-specific HP
+                    p_class = players[tid].get('tank_class', 'assault')
+                    p_stats = CLASS_STATS.get(p_class, CLASS_STATS['assault'])
+                    players[tid]['hp'] = p_stats['hp']
+                    players[tid]['max_hp'] = p_stats['max_hp']
                     players[tid]['alive'] = True
                     players[tid]['x'] = random.randint(100, 1900)
                     players[tid]['y'] = random.randint(100, 1900)
