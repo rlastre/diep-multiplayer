@@ -225,11 +225,14 @@ class PlayScene extends Phaser.Scene {
     this.socket.on('item_picked', (data) => {
       this.removeItem(data.item_id);
       if (data.player_id === this.myId) {
-        this.tank.setScale(3);
-        this.barrel.setScale(3);
+				const newScale = Math.min(2.4, this.tank.scale + 0.2 / this.tank.scale);
+        this.tank.setScale(newScale);
+        this.barrel.setScale(newScale);
       } else if (this.otherPlayers[data.player_id]) {
-        this.otherPlayers[data.player_id].tank.setScale(3);
-        this.otherPlayers[data.player_id].barrel.setScale(3);
+				const r = this.otherPlayers[data.player_id];
+				const newScale = Math.min(2.4, r.tank.scale + 0.2 / r.tank.scale);
+        r.tank.setScale(newScale);
+        r.barrel.setScale(newScale);
       }
     });
 
@@ -386,8 +389,8 @@ class PlayScene extends Phaser.Scene {
       if (shooter === this.myId) {
         for (const [pid, remote] of Object.entries(this.otherPlayers)) {
           if (!remote.alive) continue;
-          const dist = Phaser.Math.Distance.Between(bullet.x, bullet.y, remote.tank.x, remote.tank.y);
-          if (dist < 22) {
+					const dist = Math.max(Math.abs(bullet.x - remote.tank.x), Math.abs(bullet.y - remote.tank.y));
+          if (dist < 16 * remote.tank.scale) {
             bullet.destroy();
             this.socket.emit('hit', { target_id: pid });
             return;
@@ -395,8 +398,8 @@ class PlayScene extends Phaser.Scene {
         }
       }
       if (shooter && shooter !== this.myId && this.alive && this.tank) {
-        const dist = Phaser.Math.Distance.Between(bullet.x, bullet.y, this.tank.x, this.tank.y);
-        if (dist < 22) {
+				const dist = Math.max(Math.abs(bullet.x - this.tank.x), Math.abs(bullet.y - this.tank.y));
+        if (dist < 16 * this.tank.scale) {
           bullet.destroy();
         }
       }
