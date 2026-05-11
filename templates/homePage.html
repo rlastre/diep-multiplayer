@@ -65,7 +65,6 @@
             cursor: pointer;
         }
 
-        
         .skinsBtn button {
             width: 250px;
             height: 50px;
@@ -76,7 +75,6 @@
             border: none;
             cursor: pointer;
         }
-
     </style>
 </head>
 <body>
@@ -92,7 +90,7 @@
         <div class="parentContainer">
 
             <div class="playGame">
-                <a href="{{ url_for('game') }}">
+                <a href="{{ url_for('classSelect') }}">
                     <button>Play Game</button>
                 </a>
             </div>
@@ -103,10 +101,8 @@
                 </a>
             </div>
 
-
         </div>
 
-        
         <div class="logout">
             <a href="{{ url_for('logout') }}">
                 <button>Logout</button>
