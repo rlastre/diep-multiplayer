@@ -15,10 +15,21 @@
     padding: 8px 16px; border-radius: 4px;
     font-family: 'Courier New', monospace; cursor: pointer; z-index: 999;
   }
+	#chat-box {
+		position: fixed; bottom: 5%; left: 15%;
+	}
 </style>
 </head>
 <body>
 <button id="logout-btn" onclick="window.location.href='/logout'">Logout</button>
+<div id="chat-box">
+	<div id="chat-log">
+	</div>
+	<span>
+		<input id="message-input" type="text" maxlength="30" />
+		<button id="message-send">Send</button>
+	</span>
+</div>
 <script>window.PLAYER_NAME = "{{ username }}";</script>
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.90.0/dist/phaser.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>

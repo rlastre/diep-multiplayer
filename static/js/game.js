@@ -46,6 +46,7 @@ class PlayScene extends Phaser.Scene {
       s: Phaser.Input.Keyboard.KeyCodes.S,
       d: Phaser.Input.Keyboard.KeyCodes.D,
     });
+		this.input.keyboard.removeCapture('W,A,S,D'); // Allow chatbox to receive these events
     this.lastShot = 0;
     this.pointerReady = false;
     this.input.on('pointermove', () => { this.pointerReady = true; });
@@ -68,6 +69,19 @@ class PlayScene extends Phaser.Scene {
       query: { username: window.PLAYER_NAME },
       transports: ['websocket']
     });
+
+		document.getElementById('message-send').addEventListener('click', (event) => {
+			const messageInput = document.getElementById('message-input');
+			const messageValue = messageInput.value;
+			messageInput.value = '';
+			this.socket.emit('text_message_send', messageValue);
+		});
+
+		this.socket.on('text_message_receive', (data) => {
+			const message = document.createElement('div');
+			message.innerText = JSON.stringify(data);
+			document.getElementById('chat-log').append(message);
+		});
 
     this.socket.on('init', (data) => {
       this.myId = data.id;
