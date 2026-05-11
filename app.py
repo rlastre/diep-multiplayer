@@ -54,7 +54,7 @@ CLASS_STATS = {
         'bullet_speed': 400,
     },
     'medic': {
-        'hp': 120,
+        'hp': 600,
         'max_hp': 120,
         'speed': 160,
         'bullet_damage': 15,
