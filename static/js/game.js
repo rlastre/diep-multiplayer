@@ -29,6 +29,209 @@ class PlayScene extends Phaser.Scene {
   create() {
     this.cameras.main.setBackgroundColor('#e8e4d8');
     this.physics.world.setBounds(0, 0, 2000, 2000);
+
+    const wallColor = this.make.graphics({add: false});
+    wallColor.fillStyle(0x555555, 1);
+    wallColor.fillRect(0, 0, 40, 40);
+    wallColor.generateTexture('wall', 40, 40);
+    wallColor.destroy();
+
+    this.wall = this.physics.add.staticGroup();
+    // Wall - Top Left
+    this.wall.create(0, 200, 'wall').refreshBody();
+    this.wall.create(40, 200, 'wall').refreshBody();
+    this.wall.create(80, 200, 'wall').refreshBody();
+    this.wall.create(120, 200, 'wall').refreshBody();
+    this.wall.create(160, 200, 'wall').refreshBody();
+    this.wall.create(280, 200, 'wall').refreshBody();
+    this.wall.create(320, 200, 'wall').refreshBody();
+    this.wall.create(360, 200, 'wall').refreshBody();
+    this.wall.create(400, 200, 'wall').refreshBody();
+    this.wall.create(440, 200, 'wall').refreshBody();
+    this.wall.create(480, 200, 'wall').refreshBody();
+    this.wall.create(520, 200, 'wall').refreshBody();
+    this.wall.create(560, 200, 'wall').refreshBody();
+    this.wall.create(600, 200, 'wall').refreshBody();
+
+    // Wall - Top Left left side
+    this.wall.create(160, 240, 'wall').refreshBody();
+    this.wall.create(160, 280, 'wall').refreshBody();
+    this.wall.create(160, 320, 'wall').refreshBody();
+    this.wall.create(160, 360, 'wall').refreshBody();
+    this.wall.create(160, 400, 'wall').refreshBody();
+
+    this.wall.create(160, 520, 'wall').refreshBody();
+    this.wall.create(160, 560, 'wall').refreshBody();
+    this.wall.create(160, 600, 'wall').refreshBody();
+    this.wall.create(160, 640, 'wall').refreshBody();
+    this.wall.create(160, 680, 'wall').refreshBody();
+
+    this.wall.create(0, 680, 'wall').refreshBody();
+    this.wall.create(40, 680, 'wall').refreshBody();
+    this.wall.create(80, 680, 'wall').refreshBody();
+    this.wall.create(120, 680, 'wall').refreshBody();
+    this.wall.create(160, 680, 'wall').refreshBody();
+
+    // Wall - Top Left right side
+    this.wall.create(280, 240, 'wall').refreshBody();
+    this.wall.create(280, 280, 'wall').refreshBody();
+    this.wall.create(280, 320, 'wall').refreshBody();
+    this.wall.create(280, 360, 'wall').refreshBody();
+    this.wall.create(280, 400, 'wall').refreshBody();
+
+    this.wall.create(280, 520, 'wall').refreshBody();
+    this.wall.create(280, 560, 'wall').refreshBody();
+    this.wall.create(280, 600, 'wall').refreshBody();
+    this.wall.create(280, 640, 'wall').refreshBody();
+    this.wall.create(280, 680, 'wall').refreshBody();
+
+    this.wall.create(280, 840, 'wall').refreshBody();
+    this.wall.create(280, 880, 'wall').refreshBody();
+    this.wall.create(280, 920, 'wall').refreshBody();
+    this.wall.create(280, 960, 'wall').refreshBody();
+    this.wall.create(280, 1000, 'wall').refreshBody();
+    this.wall.create(280, 1040, 'wall').refreshBody();
+    this.wall.create(280, 1080, 'wall').refreshBody();
+    this.wall.create(280, 1120, 'wall').refreshBody();
+    this.wall.create(280, 1160, 'wall').refreshBody();
+    this.wall.create(280, 1200, 'wall').refreshBody();
+
+    this.wall.create(0, 1200, 'wall').refreshBody();
+    this.wall.create(120, 1200, 'wall').refreshBody();
+    this.wall.create(160, 1200, 'wall').refreshBody();
+    this.wall.create(200, 1200, 'wall').refreshBody();
+    this.wall.create(240, 1200, 'wall').refreshBody();
+    this.wall.create(280, 1200, 'wall').refreshBody();
+
+    //Wall - Bottom Left
+    this.wall.create(320, 1200, 'wall').refreshBody();
+    this.wall.create(360, 1200, 'wall').refreshBody();
+    this.wall.create(400, 1200, 'wall').refreshBody();
+    this.wall.create(440, 1200, 'wall').refreshBody();
+    this.wall.create(480, 1200, 'wall').refreshBody();
+    this.wall.create(520, 1200, 'wall').refreshBody();
+    this.wall.create(560, 1200, 'wall').refreshBody();
+    this.wall.create(680, 1200, 'wall').refreshBody();
+    this.wall.create(720, 1200, 'wall').refreshBody();
+    this.wall.create(760, 1200, 'wall').refreshBody();
+    this.wall.create(800, 1200, 'wall').refreshBody();
+    this.wall.create(840, 1200, 'wall').refreshBody();
+    this.wall.create(880, 1200, 'wall').refreshBody();
+
+    this.wall.create(880, 1240, 'wall').refreshBody();
+    this.wall.create(880, 1280, 'wall').refreshBody();
+    this.wall.create(880, 1320, 'wall').refreshBody();
+    this.wall.create(880, 1440, 'wall').refreshBody();
+    this.wall.create(880, 1480, 'wall').refreshBody();
+    this.wall.create(880, 1520, 'wall').refreshBody();
+    this.wall.create(880, 1560, 'wall').refreshBody();
+    this.wall.create(880, 1600, 'wall').refreshBody();
+    this.wall.create(880, 1640, 'wall').refreshBody();
+    this.wall.create(880, 1680, 'wall').refreshBody();
+    this.wall.create(880, 1840, 'wall').refreshBody();
+    this.wall.create(880, 1880, 'wall').refreshBody();
+    this.wall.create(880, 1920, 'wall').refreshBody();
+    this.wall.create(880, 1960, 'wall').refreshBody();
+    this.wall.create(880, 2000, 'wall').refreshBody();
+
+    //Wall - Bottom    
+    this.wall.create(1000, 1200, 'wall').refreshBody();
+    this.wall.create(1040, 1200, 'wall').refreshBody();
+    this.wall.create(1080, 1200, 'wall').refreshBody();
+    this.wall.create(1120, 1200, 'wall').refreshBody();
+    this.wall.create(1160, 1200, 'wall').refreshBody();
+    this.wall.create(1200, 1200, 'wall').refreshBody();
+    this.wall.create(1240, 1200, 'wall').refreshBody();
+    this.wall.create(1280, 1200, 'wall').refreshBody();
+    this.wall.create(1320, 1200, 'wall').refreshBody();
+    this.wall.create(1360, 1200, 'wall').refreshBody();
+    this.wall.create(1400, 1200, 'wall').refreshBody();
+    this.wall.create(1440, 1200, 'wall').refreshBody();
+    this.wall.create(1480, 1200, 'wall').refreshBody();
+
+    this.wall.create(1480, 1240, 'wall').refreshBody();
+    this.wall.create(1480, 1360, 'wall').refreshBody();
+    this.wall.create(1480, 1400, 'wall').refreshBody();
+    this.wall.create(1480, 1440, 'wall').refreshBody();
+    this.wall.create(1480, 1480, 'wall').refreshBody();
+    this.wall.create(1480, 1600, 'wall').refreshBody();
+    this.wall.create(1480, 1640, 'wall').refreshBody();
+    this.wall.create(1480, 1680, 'wall').refreshBody();
+    this.wall.create(1480, 1720, 'wall').refreshBody();
+    this.wall.create(1480, 1760, 'wall').refreshBody(); 
+    this.wall.create(1480, 1800, 'wall').refreshBody();
+    this.wall.create(1480, 1840, 'wall').refreshBody();
+    this.wall.create(1480, 1880, 'wall').refreshBody();
+    this.wall.create(1480, 1920, 'wall').refreshBody();
+    this.wall.create(1480, 1960, 'wall').refreshBody();
+    this.wall.create(1480, 2000, 'wall').refreshBody();
+
+    // Wall - Right Side
+    this.wall.create(1720, 1680, 'wall').refreshBody();
+    this.wall.create(1760, 1680, 'wall').refreshBody();
+    this.wall.create(1800, 1680, 'wall').refreshBody();
+    this.wall.create(1840, 1680, 'wall').refreshBody();
+
+    this.wall.create(1720, 1480, 'wall').refreshBody();
+    this.wall.create(1760, 1480, 'wall').refreshBody();
+    this.wall.create(1800, 1480, 'wall').refreshBody();
+    this.wall.create(1840, 1480, 'wall').refreshBody();
+
+    this.wall.create(1720, 1280, 'wall').refreshBody();
+    this.wall.create(1760, 1280, 'wall').refreshBody();
+    this.wall.create(1800, 1280, 'wall').refreshBody();
+    this.wall.create(1840, 1280, 'wall').refreshBody();
+
+    this.wall.create(1720, 1000, 'wall').refreshBody();
+    this.wall.create(1760, 1000, 'wall').refreshBody();
+    this.wall.create(1800, 1000, 'wall').refreshBody();
+    this.wall.create(1840, 1000, 'wall').refreshBody();
+
+    // Wall - Right Side
+    this.wall.create(1480, 1240, 'wall').refreshBody();
+    this.wall.create(1480, 1200, 'wall').refreshBody();
+    this.wall.create(1480, 1160, 'wall').refreshBody();
+    this.wall.create(1480, 1120, 'wall').refreshBody();
+
+    this.wall.create(1480, 920, 'wall').refreshBody();
+    this.wall.create(1480, 880, 'wall').refreshBody();
+    this.wall.create(1480, 840,'wall').refreshBody();
+    this.wall.create(1480, 800, 'wall').refreshBody();
+    this.wall.create(1480, 600, 'wall').refreshBody();
+    this.wall.create(1480, 560, 'wall').refreshBody();
+    this.wall.create(1480, 520, 'wall').refreshBody();
+    this.wall.create(1480, 360, 'wall').refreshBody();
+    this.wall.create(1480, 320, 'wall').refreshBody();
+    this.wall.create(1480, 280, 'wall').refreshBody();
+    this.wall.create(1480, 240, 'wall').refreshBody();
+    this.wall.create(1480, 200, 'wall').refreshBody();
+
+  // Wall - Top
+  this.wall.create(1480, 200, 'wall').refreshBody();
+  this.wall.create(1440, 200, 'wall').refreshBody();
+  this.wall.create(1400, 200, 'wall').refreshBody();
+  this.wall.create(1360, 200, 'wall').refreshBody();
+  this.wall.create(1320, 200, 'wall').refreshBody();
+  this.wall.create(1280, 200, 'wall').refreshBody();
+
+  this.wall.create(1080, 200, 'wall').refreshBody();
+  this.wall.create(1040, 200, 'wall').refreshBody();
+  this.wall.create(1000, 200, 'wall').refreshBody();
+  this.wall.create(960, 200, 'wall').refreshBody();
+  this.wall.create(920, 200, 'wall').refreshBody();
+
+  this.wall.create(720, 200, 'wall').refreshBody();
+  this.wall.create(680, 200, 'wall').refreshBody();
+  this.wall.create(640, 200, 'wall').refreshBody();
+  this.wall.create(600, 200, 'wall').refreshBody();
+  this.wall.create(560, 200, 'wall').refreshBody();
+
+  this.wall.create(360, 200, 'wall').refreshBody();
+  this.wall.create(320, 200, 'wall').refreshBody();
+  this.wall.create(280, 200, 'wall').refreshBody();
+
+  this.wall.create(160, 200, 'wall').refreshBody();
+
     this.cameras.main.setBounds(0, 0, 2000, 2000);
     this.cameras.main.setRoundPixels(false);
 
@@ -39,6 +242,10 @@ class PlayScene extends Phaser.Scene {
 
     this.bullets = this.physics.add.group();
     this.hpGraphics = this.add.graphics().setDepth(50);
+
+    this.physics.add.collider(this.bullets, this.wall, (bullet) => {
+        bullet.destroy();
+    })
 
     this.keys = this.input.keyboard.addKeys({
       w: Phaser.Input.Keyboard.KeyCodes.W,
@@ -299,6 +506,7 @@ class PlayScene extends Phaser.Scene {
     bg.generateTexture('barrel_local', 28, 8);
 
     this.tank = this.physics.add.image(x, y, 'tank_local');
+    this.physics.add.collider(this.tank, this.wall);
     this.tank.setCollideWorldBounds(true);
     this.tank.setDepth(1);
 
