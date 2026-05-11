@@ -169,11 +169,17 @@ class PlayScene extends Phaser.Scene {
     this.socket.on('item_picked', (data) => {
       this.removeItem(data.item_id);
       if (data.player_id === this.myId) {
-        this.tank.setScale(3);
-        this.barrel.setScale(3);
+				const newScale = this.tank.scale + 0.3 / this.tank.scale;
+        this.tank.setScale(newScale);
+        this.barrel.setScale(newScale);
+				this.myHp = Math.min(this.myHp + 30, 100);
       } else if (this.otherPlayers[data.player_id]) {
-        this.otherPlayers[data.player_id].tank.setScale(3);
-        this.otherPlayers[data.player_id].barrel.setScale(3);
+				const oldScale = this.otherPlayers[data.player_id].tank.scale;
+				const newScale = oldScale + 0.3 / oldScale;
+				const r = this.otherPlayers[data.player_id];
+        r.tank.setScale(newScale);
+        r.barrel.setScale(newScale);
+				r.hp = Math.min(r.hp + 30, 100);
       }
     });
 
