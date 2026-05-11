@@ -343,6 +343,7 @@ class PlayScene extends Phaser.Scene {
     this.bullets.getChildren().forEach(bullet => {
       if (!bullet.active) return;
       const shooter = bullet.getData('shooter');
+      // Local player's bullet hitting a remote player
       if (shooter === this.myId) {
         for (const [pid, remote] of Object.entries(this.otherPlayers)) {
           if (!remote.alive) continue;
@@ -354,9 +355,13 @@ class PlayScene extends Phaser.Scene {
           }
         }
       }
+      // Remote player's bullet hitting local player — report it to server
       if (shooter && shooter !== this.myId && this.alive && this.tank) {
         const dist = Phaser.Math.Distance.Between(bullet.x, bullet.y, this.tank.x, this.tank.y);
-        if (dist < 22) bullet.destroy();
+        if (dist < 22) {
+          bullet.destroy();
+          this.socket.emit('got_hit', { shooter_id: shooter });
+        }
       }
     });
   }
