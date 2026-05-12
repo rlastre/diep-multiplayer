@@ -9,7 +9,8 @@
         body {
             min-height: 100vh;
             font-family: 'Ubuntu', sans-serif;
-            background-image: url("{{ url_for('static', filename='classSelect.png') }}");
+            background-color: #b0bec5;
+            background-image: url("{{ url_for('static', filename='classSelect.png') }}"), linear-gradient(135deg, #cfd8dc 0%, #90a4ae 100%);
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
@@ -56,6 +57,7 @@
             background-color: lightskyblue;
             color: slategrey;
             border: none;
+            border-radius: 16px;
             padding: 20px 18px;
             text-align: center;
             cursor: pointer;
@@ -64,12 +66,13 @@
             flex-direction: column;
             align-items: center;
             font-family: 'Ubuntu', sans-serif;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
             transition: transform 0.15s, opacity 0.15s, box-shadow 0.15s;
         }
         .class-card:hover {
             opacity: 0.95;
             transform: translateY(-4px);
-            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
         }
         .class-card:active {
             transform: translateY(-2px) scale(0.98);
@@ -79,6 +82,7 @@
             width: 110px;
             height: 110px;
             object-fit: contain;
+            border-radius: 14px;
             margin-bottom: 12px;
         }
 
