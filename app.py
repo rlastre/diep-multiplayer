@@ -43,7 +43,7 @@ CLASS_STATS = {
         'speed': 150,
         'bullet_damage': 10,
         'fire_rate': 100,
-        'bullet_speed': 300,
+        'bullet_speed': 400,
     },
     'support': {
         'hp': 170,
@@ -51,11 +51,11 @@ CLASS_STATS = {
         'speed': 150,
         'bullet_damage': 30,
         'fire_rate': 280,
-        'bullet_speed': 400,
+        'bullet_speed': 300,
     },
     'medic': {
-        'hp': 120,
-        'max_hp': 120,
+        'hp': 175,
+        'max_hp': 175,
         'speed': 150,
         'bullet_damage': 15,
         'fire_rate': 400,
@@ -200,7 +200,7 @@ def on_connect():
         'max_hp': stats['max_hp'],
         'alive': True,
         'username': username,
-        'tank_class': tank_class,
+        'tank_class': tank_class,    
         'bullet_damage': stats['bullet_damage'],
     }
     emit('init', {'id': request.sid, 'players': players, 'items': items})
