@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Tank Customization</title>
+        <style>
+            body {
+                margin: 0;
+                background-color: blanchedalmond;
+                font-family: sans-serif;
+            }
+
+            .header {
+                background-color: rgb(208, 171, 115);
+                padding: 10px; 
+                display: flex;
+                align-items: center;
+                position: relative; 
+                min-height: 80px;
+            }
+
+            .back-button {
+                background-color: lightcoral;
+                color: white; 
+                font-size: 16px;
+                padding: 10px 20px; 
+                border: 2px solid black; 
+                text-decoration: none; 
+                z-index: 2; 
+            }
+
+            .nav-title {
+                position: absolute;
+                left: 0;
+                right: 0;
+                text-align: center;
+                font-size: 2rem;
+                pointer-events: none; 
+                z-index: 1;
+            }
+
+            .color-container {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 20px;
+                padding: 20px;
+                margin-top: 2vh;
+            }
+
+            .one-color {
+                padding: 20px;
+                border: 2px solid black; 
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                height: 100%;
+                box-sizing: border-box;
+                border-radius: 8px;
+                transition: transform 0.2s;
+            }
+
+            .color-preview {
+                width: 100%;
+                height: 100px; 
+                margin-bottom: 1rem;
+                border: 2px solid black;
+            }
+
+            .achievement-name {
+                font-weight: bold;
+                font-size: 1.2rem;
+                margin-bottom: 5px;
+            }
+
+            .achievement-desc {
+                font-size: 0.9rem;
+                flex-grow: 1; 
+                margin-bottom: 10px;
+            }
+
+            .locked {
+                background-color: rgb(219, 146, 146);
+                opacity: 0.8;
+            }
+
+            .unlocked {
+                background-color: rgb(123, 202, 107);
+            }
+
+            .equipped {
+                border: 5px solid gold;
+                box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+            }
+
+            .btn {
+                margin-top: 15px;
+                padding: 10px 20px;
+                width: 100%;
+                border: 2px solid black;
+                font-weight: bold;
+                cursor: pointer;
+                transition: 0.2s;
+            }
+
+            .equip-btn {
+                background-color: #fff;
+            }
+
+            .equip-btn:hover {
+                background-color: #eee;
+                transform: translateY(-2px);
+            }
+
+            .locked-btn {
+                background-color: #999;
+                cursor: not-allowed;
+                color: #444;
+            }
+
+            .equipped-btn {
+                background-color: gold;
+                cursor: default;
+            }
+            
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <a href="{{url_for('homePage')}}" class="back-button">Back</a>
+            <div class="nav-title">Skins and Achievements</div>
+        </div>
+
+        <div class="color-container"></div>
+
+        <div id="user-data" data-kills="{{kills}}" data-equipped="{{current_skin}}"></div>
+
+        <script>
+            const userData = document.getElementById('user-data');
+            const userKills = parseInt(userData.dataset.kills) || 0;
+            let equippedHex = userData.dataset.equipped; 
+            
+            const colorContainer = document.querySelector(".color-container"); 
+            
+            const colorOptions = {
+                "New Blood": { "desc": "Welcome to the arena!", "color": "Slate", "hex": "#708090", "kill_req": 0 },
+                "First Blood": { "desc": "Get your first kill", "color": "Crimson", "hex": "#b31b1b", "kill_req": 1 },
+                "Skirmisher": { "desc": "Show them you're staying", "color": "Forest Green", "hex": "#228b22", "kill_req": 5 },
+                "Brawler": { "desc": "Getting comfortable with the chaos", "color": "Ochre", "hex": "#693e2a", "kill_req": 15 },
+                "Warrior": { "desc": "A respected fighter in the ranks", "color": "Bronze", "hex": "#cd7f32", "kill_req": 30 },
+                "Veteran": { "desc": "Hardened by battle", "color": "Steel Blue", "hex": "#4682b4", "kill_req": 50 },
+                "Slayer": { "desc": "A trail of enemies in your wake", "color": "Deep Violet", "hex": "#9400d3", "kill_req": 75 },
+                "Elite": { "desc": "Only the best reach this level", "color": "Silver", "hex": "#c0c0c0", "kill_req": 125 },
+                "Master": { "desc": "A true master of the craft", "color": "Gold", "hex": "#ffd700", "kill_req": 185 },
+                "Champion": { "desc": "The ultimate victory", "color": "Electric Cyan", "hex": "#00ffff", "kill_req": 250 }
+            };
+
+            function renderSkins() {
+                colorContainer.innerHTML = ""; 
+                for (const [name, stats] of Object.entries(colorOptions)) {
+                    const isUnlocked = userKills >= stats.kill_req;
+                    const isEquipped = equippedHex === stats.hex;
+                    
+                    colorContainer.innerHTML += `
+                    <div class="one-color ${isUnlocked ? "unlocked" : "locked"} ${isEquipped ? "equipped" : ""}">
+                        <div class="color-preview" style="background-color: ${stats.hex};"></div>
+                        <div class="achievement-name">${name}</div>
+                        <div class="achievement-desc">${stats.desc}</div>
+                        <div style="font-style: italic;">Unlocks: <strong>${stats.color}</strong></div>
+                        <div style="font-size: 0.8rem; margin-top: 5px;">(${stats.kill_req} Kills)</div>
+                        
+                        ${!isUnlocked 
+                            ? `<button class="btn locked-btn" disabled>LOCKED</button>` 
+                            : isEquipped 
+                                ? `<button class="btn equipped-btn" disabled>EQUIPPED</button>`
+                                : `<button class="btn equip-btn" onclick="equipSkin('${stats.hex}')">EQUIP</button>`
+                        }
+                    </div>
+                    `;
+                }
+            }
+
+            async function equipSkin(hexCode) {
+                try {
+                    const response = await fetch('/equip_skin', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: `color_hex=${encodeURIComponent(hexCode)}`
+                    });
+
+                    if (response.ok) {
+                        equippedHex = hexCode;
+                        renderSkins();
+                        console.log("Skin updated to:", hexCode);
+                    } else {
+                        alert("Failed to equip skin.");
+                    }
+                } catch (err) {
+                    console.error("Error updating skin:", err);
+                }
+            }
+
+            //  render
+            renderSkins();
+        </script>
+    </body>
+</html>
