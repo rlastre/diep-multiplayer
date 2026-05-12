@@ -481,8 +481,8 @@ class PlayScene extends Phaser.Scene {
     if (!this.tank || !this.alive) return;
     for (const [id, sprite] of Object.entries(this.itemSprites)) {
       if (!sprite.active) continue;
-      const dist = Phaser.Math.Distance.Between(this.tank.x, this.tank.y, sprite.x, sprite.y);
-      if (dist < 30) this.socket.emit('pickup', { item_id: id });
+      const dist = Math.max(Math.abs(this.tank.x - sprite.x), Math.abs(this.tank.y - sprite.y));
+      if (dist < 33 * this.tank.scale) this.socket.emit('pickup', { item_id: id });
     }
   }
 
