@@ -17,7 +17,7 @@
     font-family: 'Courier New', monospace; cursor: pointer; z-index: 999;
   }
 	#chat-box {
-		position: fixed; bottom: 5%; left: 20%; max-width: 30%;
+		position: fixed; bottom: 5%; right: 60%; max-width: 30%;
 		font-family: 'Courier New', monospace; overflow-wrap: break-word;
 	}
 	#chat-box input {
@@ -42,7 +42,6 @@
 		display: flex; align-items: center;
 	}
 </style>
-=======
   <meta charset="UTF-8">
   <title>Tank Arena</title>
   <style>
@@ -68,10 +67,20 @@
       border: none;
       padding: 8px 16px;
       border-radius: 4px;
-      font-family: 'Courier New', monospace;
+			font-family: 'Ubuntu', sans-serif;
       cursor: pointer;
       z-index: 999;
     }
+
+		.back-link {
+			font-family: 'Ubuntu', sans-serif;
+			position: fixed;
+			top: 20px;
+			left: 20px;
+			color: #fff;
+			text-decoration: none;
+			font-size: 14px;
+		}
   </style>
 </head>
 
@@ -92,6 +101,7 @@
 <script src="/static/js/game.js"></script>
 </body>
 </html>
+	<a href="{{ url_for('homePage') }}" class="back-link">← Back to Menu</a>
   <button id="logout-btn" onclick="window.location.href='/logout'">Logout</button>
 
   <!-- Game config stored in data attributes - cleaner approach -->

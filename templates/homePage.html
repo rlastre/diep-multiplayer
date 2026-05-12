@@ -30,19 +30,12 @@
             margin-top: 10px;
         }
 
-        .logout {
-            top: 20px;
-            left: 20px;
-            position: fixed;
-        }
-        .logout button {
-            font-size: 16px;
-            background-color: lightcoral;
-            color: slategrey;
-            border: none;
-            padding: 8px 16px;
-            cursor: pointer;
-        }
+				.logout {
+					position: fixed; top: 10px; right: 10px;
+					background: #cc4444; color: #fff; border: none;
+					padding: 8px 16px; border-radius: 4px;
+					font-family: 'Ubuntu', sans-serif; cursor: pointer; z-index: 999;
+				}
 
         .parentContainer {
             position: fixed;
@@ -103,11 +96,7 @@
 
         </div>
 
-        <div class="logout">
-            <a href="{{ url_for('logout') }}">
-                <button>Logout</button>
-            </a>
-        </div>
+        <button class="logout" onclick="window.location.href='/logout'">Logout</button>
 
     </div>
 
