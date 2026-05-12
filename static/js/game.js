@@ -262,7 +262,7 @@ class PlayScene extends Phaser.Scene {
       fontFamily: 'Courier New', fontSize: '14px', color: '#333',
     }).setScrollFactor(0);
 
-    this.add.text(this.scale.width - 10, 570, 'WASD move · Mouse aim · Click shoot', {
+    this.add.text(this.cameras.width - 14, 570, 'WASD move · Mouse aim · Click shoot', {
       fontFamily: 'Courier New', fontSize: '13px', color: '#888',
     }).setScrollFactor(0);
 
